@@ -1,5 +1,5 @@
 import numpy as np
-import pygame.draw
+import pygame
 
 import utilities
 from main_window import SIZE
@@ -9,10 +9,10 @@ class Grid:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.board = np.array([[None for _ in range(height)] for _ in range(width)])
+        self.board = np.array([[None for i in range(height)] for j in range(width)])
         self.left = 10
         self.top = 10
-        self.cell_size = 20
+        self.cell_size = 2
 
         self.mask = self.get_mask()
 
@@ -22,9 +22,10 @@ class Grid:
         self.cell_size = cell_size
 
     def render(self, screen):
-        for i in self.get_mask():
+        mask = self.get_mask()
+        for i in mask:
             texture = utilities.tile_texture(i, SIZE)
-            utilities.stamp(screen, texture, self.get_mask()[i])
+            utilities.stamp(screen, texture, mask[i])
 
     def to_local_coordinates(self, coord):
         return (coord[0] - self.left) // self.cell_size, (coord[1] - self.top) // self.cell_size
@@ -59,6 +60,21 @@ class Grid:
 
     def set_item(self, i, j, item):
         self.board[i, j] = item
+
+    def get_collider(self):
+        surface = pygame.Surface(SIZE, pygame.SRCALPHA, 32)
+        surface = surface.convert_alpha()
+
+        self.render(surface)
+        return Collider(surface)
+
+
+class Collider(pygame.sprite.Sprite):
+    def __init__(self, surface):
+        super().__init__()
+        self.image = surface
+        self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
 
 
 class GridItem:

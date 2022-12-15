@@ -66,15 +66,25 @@ class Grid:
         surface = surface.convert_alpha()
 
         self.render(surface)
-        return Collider(surface)
+        return MaskCollider(surface)
 
 
-class Collider(pygame.sprite.Sprite):
+class MaskCollider(pygame.sprite.Sprite):
     def __init__(self, surface):
         super().__init__()
         self.image = surface
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
+
+
+class BoxCollider(pygame.sprite.Sprite):
+    def __init__(self, x, y, w, h):
+        super().__init__()
+        self.image = pygame.Surface((w, h))
+        self.image.fill("red")
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
 
 class GridItem:

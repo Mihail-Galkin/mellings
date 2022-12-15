@@ -33,11 +33,11 @@ class MainWindow(Window):
         self.players_group.draw(self.screen)
         self.players[0].update()
 
-    def event(self, event):
-        # from player import Player
-        # if event.type == pygame.MOUSEBUTTONDOWN:
-        #     Player(self.players_group, event.pos)
-        return
+    # def event(self, event):
+    #     # from player import Player
+    #     # if event.type == pygame.MOUSEBUTTONDOWN:
+    #     #     Player(self.players_group, event.pos)
+    #     return
 
 if __name__ == "__main__":
     main = MainWindow("123", SIZE)

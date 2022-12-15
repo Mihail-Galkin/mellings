@@ -1,5 +1,7 @@
 import os
+import random
 import sys
+from math import sqrt
 
 import pygame
 

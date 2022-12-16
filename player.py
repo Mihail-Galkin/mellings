@@ -9,7 +9,7 @@ from vector import Vector
 
 class Player(pygame.sprite.Sprite):
     image = load_image("player.png")
-    g = 500
+    g = 2000
     walk_speed = 0
     mass = 100
 
@@ -21,41 +21,41 @@ class Player(pygame.sprite.Sprite):
         self.move_direction = 1
         self.grid = grid
 
-        self.position = np.array([100, 100])
+        self.position = [100, 100]
 
         self.on_ground = False
 
-        self.velocity = Vector(0, 0)
-        self.force = Vector(0, 0)
+        self.velocities = {}
+        self.forces = {"g": Vector(0, self.mass * self.g)}
 
         self.ground_checker = BoxCollider(self.position[0], self.position[1] + 1, self.rect.width, 1)
         group.add(self.ground_checker)
 
-        self.add_force(Vector(0, self.g * self.mass))
-        self.add_velocity(Vector(200, 0))
-        self.add_velocity(Vector(0, -200))
+        self.add_velocity(1, Vector(200, 0))
+        self.add_velocity(2, Vector(0, -200))
 
-    def add_velocity(self, velocity: Vector):
-        self.velocity = self.velocity + velocity
+    def add_velocity(self, key, velocity: Vector):
+        self.velocities[key] = velocity
 
-    def add_force(self, force):
-        self.force = self.force + force
+    def add_force(self, key, force):
+        self.forces[key] = force
 
     def update(self):
         self.move()
 
         self.rect.x, self.rect.y = self.position
 
+        self.ground_checker.rect.y = self.rect.y + self.rect.height
+        self.ground_checker.rect.x = self.rect.x
 
-
-        # self.ground_checker.rect.y = self.rect.y + self.rect.height
-        # self.ground_checker.rect.x = self.rect.x
-        #
-        # collider = self.grid.get_collider()
-        # self.on_ground = bool(pygame.sprite.collide_mask(self.ground_checker, collider))
-        #
-        # if self.on_ground:
-        #     self.falling_speed = 0
+        collider = self.grid.get_collider()
+        self.on_ground = bool(pygame.sprite.collide_mask(self.ground_checker, collider))
+        print(self.on_ground, self.forces, self.velocities)
+        if self.on_ground:
+            self.forces["g"] = Vector(0, 0)
+            self.velocities["g"] = Vector(0, 0)
+        else:
+            self.forces["g"] = Vector(0, self.mass * self.g)
         # else:
         #     self.position[1] += self.falling_speed / FPS
         #     self.falling_speed += self.g / FPS
@@ -66,5 +66,6 @@ class Player(pygame.sprite.Sprite):
         #     self.rect.y = int(self.position[1])
 
     def move(self):
-        self.velocity = self.velocity + self.force / self.mass / FPS
-        self.position = self.position + np.array(list(self.velocity / FPS))
+        for i in self.forces.keys():
+            self.velocities[i] = self.velocities.get(i, Vector(0, 0)) + self.forces[i] / self.mass / FPS
+        self.position = self.position + sum(self.velocities.values()) / FPS

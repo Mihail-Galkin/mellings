@@ -30,6 +30,7 @@ class Grid:
         result.convert_alpha()
 
         mask = self.get_mask()
+        print(mask)
         for i in mask:
             texture = utilities.tile_texture(i, SIZE)
             utilities.stamp(result, texture, mask[i])
@@ -58,7 +59,7 @@ class Grid:
     def set_item(self, x: int, y: int, item: GridItem):
         old = self.board[x, y]
         if old is not None:
-            pygame.draw.rect(self.mask[old.texure], 0, (x, y, self.cell_size, self.cell_size))
+            pygame.draw.rect(self.mask[old.texture], 0, (*self.to_absolute_coordinates((x, y)), self.cell_size, self.cell_size))
         if item is not None:
             if item.texture not in self.mask.keys():
                 self.mask[item.texture] = pygame.Surface(SIZE, depth=8)

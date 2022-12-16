@@ -15,15 +15,21 @@ class MainWindow(Window):
 
     def start(self):
         from grid import Grid, Dirt
-        from player import Player
+        from player import Player, Digger
 
         self.grid = Grid(180, 180)
         self.players_group = pygame.sprite.Group()
-        self.players = [Player(self.players_group, self.grid)]
+        self.players = [Digger(self.players_group, self.grid)]
 
-        for i in range(90, 180):
+        for i in range(170, 180):
+            for j in range(0, 180):
+                self.grid.set_item(i, j, Dirt(self.grid, (i, j)))
+        for i in range(170, 180):
             for j in range(0, 180):
                 self.grid.set_item(j, i, Dirt(self.grid, (j, i)))
+        for i in range(10):
+            for j in range(0, 180):
+                self.grid.set_item(i, j, Dirt(self.grid, (i, j)))
         self.grid.rendered = self.grid.render()
 
     def update(self):
@@ -31,6 +37,8 @@ class MainWindow(Window):
         self.grid.draw(self.screen)
         self.players_group.draw(self.screen)
         self.players[0].update()
+
+        # print(self.clock.get_fps())
 
     # def event(self, event):
     #     # from player import Player

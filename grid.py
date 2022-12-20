@@ -2,7 +2,6 @@ import numpy as np
 import pygame
 
 import utilities
-from grid_item import GridItem
 from main_window import SIZE
 
 
@@ -30,7 +29,7 @@ class Grid:
         result.convert_alpha()
 
         mask = self.get_mask()
-        print(mask)
+
         for i in mask:
             texture = utilities.tile_texture(i, SIZE)
             utilities.stamp(result, texture, mask[i])
@@ -56,7 +55,7 @@ class Grid:
                 self.board[i, j].render(masks[self.board[i, j].texture])
         return masks
 
-    def set_item(self, x: int, y: int, item: GridItem):
+    def set_item(self, x: int, y: int, item):
         old = self.board[x, y]
         if old is not None:
             pygame.draw.rect(self.mask[old.texture], 0, (*self.to_absolute_coordinates((x, y)), self.cell_size, self.cell_size))
@@ -78,7 +77,8 @@ class Grid:
 
     def on_click(self, cell_coord: tuple):
         if cell_coord is not None:
-            self.board[cell_coord] = Dirt(self, cell_coord)
+            # self.board[cell_coord] = Dirt(self, cell_coord)
+            pass
 
     def get_collider(self):
         surface = pygame.Surface(SIZE, pygame.SRCALPHA, 32)
@@ -106,8 +106,3 @@ class BoxCollider(pygame.sprite.Sprite):
         self.rect.y = y
 
 
-class Dirt(GridItem):
-    texture = utilities.load_image("dirt.png")
-
-    def __init__(self, grid: Grid, position: tuple):
-        super().__init__(grid, position)

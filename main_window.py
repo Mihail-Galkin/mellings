@@ -3,6 +3,7 @@ from pygame import QUIT
 
 from game import Window
 
+
 from utilities import tile_texture, stamp
 
 SIZE = 500, 500
@@ -18,8 +19,9 @@ class MainWindow(Window):
         from grid_item import Dirt
         from characters import Digger, Floater, Climber, Basher, Miner, Bomber, Builder
         from abstract_characters import MovableCharacter
+        from level import load_level
 
-        self.grid = Grid(180, 180)
+        self.grid = load_level("level").grid
         self.players_group = pygame.sprite.Group()
         self.players = [Builder(self.players_group, self, (100, 100))]
 

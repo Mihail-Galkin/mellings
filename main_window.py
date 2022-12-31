@@ -1,13 +1,17 @@
 import pygame
-from pygame import QUIT
 
 from game import Window
+from icecream import install
 
-
-from utilities import tile_texture, stamp
-
-SIZE = 500, 500
+SIZE = 1920, 1080
 FPS = 60
+
+
+def show_fps(screen, fps):
+    font = pygame.font.Font(None, 20)
+    text = font.render(str(round(fps, 1)), True, (100, 255, 100))
+
+    screen.blit(text, (0, 0))
 
 
 class MainWindow(Window):
@@ -15,46 +19,18 @@ class MainWindow(Window):
         super().__init__(title, size)
 
     def start(self):
-        from grid import Grid
-        from grid_item import Dirt
-        from characters import Digger, Floater, Climber, Basher, Miner, Bomber, Builder
-        from abstract_characters import MovableCharacter
-        from level import load_level
-
-        self.grid = load_level("level").grid
-        self.players_group = pygame.sprite.Group()
-        self.players = [Builder(self.players_group, self, (100, 100))]
-
-        for i in range(170, 180):
-            for j in range(0, 180):
-                self.grid.set_item(i, j, Dirt(self.grid, (i, j)))
-        for i in range(120, 180):
-            for j in range(0, 180):
-                self.grid.set_item(j, i, Dirt(self.grid, (j, i)))
-        for i in range(10):
-            for j in range(0, 180):
-                self.grid.set_item(i, j, Dirt(self.grid, (i, j)))
-        self.grid.rendered = self.grid.render()
-
-        self.colliders = []
+        pass
 
     def update(self):
         self.fps = self.clock.get_fps()
         if self.fps == 0:
-            return
-        self.screen.fill((0, 0, 0))
-        self.grid.draw(self.screen)
-        self.players_group.draw(self.screen)
-        self.players_group.update()
+            self.fps = 60
+        show_fps(self.surface, self.clock.get_fps())
 
-        # print(self.clock.get_fps())
-
-    # def event(self, event):
-    #     # from player import Player
-    #     # if event.type == pygame.MOUSEBUTTONDOWN:
-    #     #     Player(self.players_group, event.pos)
-    #     return
+    def event(self, event):
+        pass
 
 
 if __name__ == "__main__":
+    install()
     main = MainWindow("123", SIZE)

@@ -3,53 +3,74 @@
 import math
 from abc import ABC
 from typing import Union
-
 import pygame
 
+import utilities
 from grid import BoxCollider
 from main_window import MainWindow
+from screens.abstract_screen import Screen
 from utilities import load_image
 from vector import Vector
 
 
 class StaticCharacter(pygame.sprite.Sprite):
-    image = pygame.transform.scale(load_image("player.png"), (17, 34))
+    # animation_sheet = pygame.transform.scale(load_image("player.png"), (17, 34))
 
-    def __init__(self, group: pygame.sprite.Group, game: MainWindow, position: tuple[int, int] = (0, 0)):
-        super().__init__(group)
-        self.image = StaticCharacter.image
+    def __init__(self, screen: Screen, position: tuple[int, int] = (0, 0)):
+        super().__init__(screen.all_sprites)
+        screen.players_group.add(self)
+
+        self.animation = utilities.cut_sheet(self.animation_sheet, 9, 1)
+        self.image = self.animation[0]
+        self.current_frame = 0
+        self.animation_cooldown = 5
+        self.animation_current_cooldown = 0
+
         self.rect = self.image.get_rect()
 
-        self.game = game
+        self.screen = screen
+        self.game = screen.game
 
         self.position = list(position)
 
         self.on_ground = False
 
         self.ground_checker = BoxCollider(self.position[0], self.position[1] + 1, self.rect.width, 1)
-        group.add(self.ground_checker)
+        screen.all_sprites.add(self.ground_checker)
 
     def update(self):
         self.rect.x, self.rect.y = self.position
 
         self.ground_check()
         self.custom_update()
+        self.animation_update()
+
+
+    def animation_update(self):
+        self.animation_current_cooldown += 1
+        if self.animation_current_cooldown >= self.animation_cooldown:
+            self.animation_current_cooldown = 0
+
+            self.current_frame = (self.current_frame + 1) % len(self.animation)
+            self.image = self.animation[self.current_frame]
+
 
     def ground_check(self):
         self.ground_checker.rect.y = self.rect.y + self.rect.height
         self.ground_checker.rect.x = self.rect.x
 
-        self.on_ground = bool(pygame.sprite.collide_mask(self.ground_checker, self.game.grid.get_collider()))
+        self.on_ground = bool(pygame.sprite.collide_mask(self.ground_checker, self.screen.grid.get_collider()))
 
     def custom_update(self):
         raise NotImplementedError()
 
 
 class MovableCharacter(StaticCharacter):
-    g = 200
-    walk_speed = 100
+    animation_sheet = load_image("walk.png")
+    g = 400
+    walk_speed = 40
     mass = 100
-    jump_height = 5
+    jump_height = 10
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -71,6 +92,8 @@ class MovableCharacter(StaticCharacter):
         self.custom_update()
         self.collision_check()
 
+        self.animation_update()
+
     def add_velocity(self, key, velocity: Vector):
         self.velocities[key] = velocity
 
@@ -78,7 +101,7 @@ class MovableCharacter(StaticCharacter):
         self.forces[key] = force
 
     def move(self, delta: Vector):
-        collider = self.game.grid.get_collider()
+        collider = self.screen.grid.get_collider()
 
         sign = -math.copysign(1, delta.x)
 
@@ -87,8 +110,8 @@ class MovableCharacter(StaticCharacter):
             if pygame.sprite.collide_mask(self, collider):
                 self.rect.x -= sign
                 self.position[0] = self.rect.x
-
                 self.wall_reaction(sign)
+
                 break
 
         sign = -math.copysign(1, delta.y)
@@ -120,15 +143,13 @@ class MovableCharacter(StaticCharacter):
         self.move(delta)
 
     def get_wall_height(self, direction):
-        collider = self.game.grid.get_collider()
+        collider = self.screen.grid.get_collider()
         if direction == 1:
-            wall_checker = (BoxCollider(self.rect.x + self.rect.width - 1, self.rect.y, 1, self.rect.height),
-                            BoxCollider(self.rect.x + self.rect.width, self.rect.y, 1, self.rect.height))
+            wall_checker = (BoxCollider(self.rect.x + self.rect.width - 1, self.rect.y, 0, self.rect.height),
+                            BoxCollider(self.rect.x, self.rect.y, self.rect.width - 1, self.rect.height - 1))
         else:
-            wall_checker = (BoxCollider(self.rect.x, self.rect.y, 1, self.rect.height),
-                            BoxCollider(self.rect.x - 1, self.rect.y, 1, self.rect.height))
-
-        self.groups()[0].add(wall_checker)
+            wall_checker = (BoxCollider(self.rect.x - 1, self.rect.y, 0, self.rect.height),
+                            BoxCollider(self.rect.x, self.rect.y, self.rect.width - 1, self.rect.height - 1))
 
         delta = 0
 
@@ -136,10 +157,10 @@ class MovableCharacter(StaticCharacter):
             delta += 1
             wall_checker[0].rect.y -= 1
             wall_checker[1].rect.y -= 1
-            if pygame.sprite.collide_mask(wall_checker[0], collider):
+            if pygame.sprite.collide_mask(wall_checker[1], collider):
                 delta = 10 ** 5
                 break
-            if not pygame.sprite.collide_mask(wall_checker[1], collider):
+            if not pygame.sprite.collide_mask(wall_checker[0], collider):
                 break
 
         wall_checker[0].kill()
@@ -149,7 +170,8 @@ class MovableCharacter(StaticCharacter):
 
     def wall_reaction(self, direction):
         height = self.get_wall_height(direction)
-        if height < self.jump_height * self.game.grid.cell_size:
+        ic(height)
+        if height < self.jump_height * self.screen.grid.cell_size:
             self.position[1] -= height
             self.position[0] += direction
 

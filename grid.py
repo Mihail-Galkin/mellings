@@ -101,8 +101,5 @@ class BoxCollider(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.Surface((w, h))
         self.image.fill("red")
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-
+        self.rect = pygame.Rect(x, y, w, h)
 

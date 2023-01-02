@@ -3,15 +3,18 @@ import pygame
 from game import Window
 from icecream import install
 
-SIZE = 1920, 1080
-FPS = 60
+SIZE = 960, 540
+FPS = 120
 
 
 def show_fps(screen, fps):
-    font = pygame.font.Font(None, 20)
-    text = font.render(str(round(fps, 1)), True, (100, 255, 100))
-
-    screen.blit(text, (0, 0))
+    # font = pygame.font.Font(None, 20)
+    # text = font.render(str(round(fps, 1)), True, (100, 255, 100))
+    #
+    # screen.blit(text, (0, 0))
+    pygame.display.set_caption(str(fps))
+    # print(fps)
+    # print(fps)
 
 
 class MainWindow(Window):

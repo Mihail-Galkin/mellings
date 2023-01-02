@@ -9,18 +9,32 @@ from utilities import load_image
 
 class Button(pygame.sprite.Sprite):
     def __init__(self, screen: Screen, texture: str,
-                 position: tuple[int, int], listener: Callable[[MainWindow], None],
+                 position: tuple[int, int], listener: Callable[[MainWindow, ...], None],
                  size: tuple[int, int] = None, text: str = "", text_color="white",
-                 text_size: int = 20, hover_texture: str = None):
+                 text_size: int = 20, hover_texture: str = None, args=None, kwargs=None):
         super().__init__(screen.all_sprites)
+        if kwargs is None:
+            kwargs = {}
+        if args is None:
+            args = []
+
+        self.kwargs = kwargs
+        self.args = args
+
         screen.buttons_group.add(self)
 
         if size is not None:
             self.default_image = pygame.transform.scale(load_image(texture), size)
-            self.hover_image = pygame.transform.scale(load_image(hover_texture), size)
+            if hover_texture:
+                self.hover_image = pygame.transform.scale(load_image(hover_texture), size)
+            else:
+                self.hover_image = None
         else:
             self.default_image = load_image(texture)
-            self.hover_image = load_image(hover_texture)
+            if hover_texture:
+                self.hover_image = load_image(hover_texture)
+            else:
+                self.hover_image = None
         self.image = self.default_image
 
         self.rect = self.image.get_rect()
@@ -35,6 +49,8 @@ class Button(pygame.sprite.Sprite):
 
         self.rect.x, self.rect.y = position
 
+        self.texture = texture
+
     def update(self):
         if self.hover_image and self.rect.collidepoint(*pygame.mouse.get_pos()):
             self.image = self.hover_image
@@ -45,7 +61,7 @@ class Button(pygame.sprite.Sprite):
         if not pygame.mouse.get_pressed()[0]:
             self.clicked = False
         if self.rect.collidepoint(*pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0] and not self.clicked:
-            self.listener(self.game)
+            self.listener(self.game, *self.args, **self.kwargs)
             self.clicked = True
 
     def draw_text(self):

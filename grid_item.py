@@ -2,6 +2,7 @@ import pygame
 
 import utilities
 from grid import Grid
+from main_window import SIZE
 
 
 class GridItem:
@@ -16,14 +17,14 @@ class GridItem:
 
 
 class Dirt(GridItem):
-    texture = utilities.load_image("dirt.png")
+    texture = utilities.tile_texture(utilities.load_image("dirt.png"), SIZE)
 
     def __init__(self, grid: Grid, position: tuple):
         super().__init__(grid, position)
 
 
 class Stairs(GridItem):
-    texture = utilities.load_image("dirt.png")
+    texture = utilities.tile_texture(utilities.load_image("button.png"), SIZE)
 
     def __init__(self, grid: Grid, position: tuple):
         super().__init__(grid, position)

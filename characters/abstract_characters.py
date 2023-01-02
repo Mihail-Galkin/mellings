@@ -58,7 +58,6 @@ class StaticCharacter(pygame.sprite.Sprite):
     def ground_check(self):
         self.ground_checker.rect.y = self.rect.y + self.rect.height
         self.ground_checker.rect.x = self.rect.x
-
         self.on_ground = bool(pygame.sprite.collide_mask(self.ground_checker, self.screen.grid.get_collider()))
 
     def custom_update(self):
@@ -67,7 +66,7 @@ class StaticCharacter(pygame.sprite.Sprite):
 
 class MovableCharacter(StaticCharacter):
     animation_sheet = load_image("walk.png")
-    g = 400
+    g = 1000
     walk_speed = 40
     mass = 100
     jump_height = 10
@@ -170,7 +169,6 @@ class MovableCharacter(StaticCharacter):
 
     def wall_reaction(self, direction):
         height = self.get_wall_height(direction)
-        ic(height)
         if height < self.jump_height * self.screen.grid.cell_size:
             self.position[1] -= height
             self.position[0] += direction

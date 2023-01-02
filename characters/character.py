@@ -1,8 +1,8 @@
 import pygame
 
-from abstract_characters import MovableCharacter, StaticCharacter
+from characters.abstract_characters import MovableCharacter, StaticCharacter
 from grid import BoxCollider
-from grid_item import Stairs
+from grid_item import Stairs, Dirt
 from utilities import load_image
 from vector import Vector
 
@@ -27,7 +27,6 @@ class Digger(MovableCharacter):
                 for j in range(-self.radius, self.radius + 1):
                     if i ** 2 + j ** 2 <= self.radius ** 2:
                         self.screen.grid.set_item(int(pos[0] + i), int(pos[1] + j), None)
-            self.screen.grid.rendered = self.screen.grid.render()
 
 
 class Floater(MovableCharacter):
@@ -102,7 +101,7 @@ class Basher(MovableCharacter):
                 for j in range(-self.radius, self.radius + 1):
                     if i ** 2 + j ** 2 <= self.radius ** 2:
                         self.screen.grid.set_item(int(pos[0] + i), int(pos[1] + j), None)
-            self.screen.grid.rendered = self.screen.grid.render()
+            self.screen.grid.update_render()
 
 
 class Miner(MovableCharacter):
@@ -122,7 +121,7 @@ class Miner(MovableCharacter):
                 for j in range(-self.radius, self.radius + 1):
                     if i ** 2 + j ** 2 <= self.radius ** 2:
                         self.screen.grid.set_item(int(pos[0] + i), int(pos[1] + j), None)
-            self.screen.grid.rendered = self.screen.grid.render()
+            self.screen.grid.update_render()
 
 
 class Bomber(MovableCharacter):
@@ -142,39 +141,60 @@ class Bomber(MovableCharacter):
                 for j in range(-self.radius, self.radius + 1):
                     if i ** 2 + j ** 2 <= self.radius ** 2:
                         self.screen.grid.set_item(int(pos[0] + i), int(pos[1] + j), None)
-            self.screen.grid.rendered = self.screen.grid.render()
+            self.screen.grid.update_render()
             self.kill()
             self.game.players_group.remove(self)
             self.game.players.remove(self)
 
 
 class Builder(MovableCharacter):
-    platform_size = 1
+    platform_size = 5
+    walk_speed = 20
 
     def __init__(self, *args, **kwargs):
         super(Builder, self).__init__(*args, **kwargs)
         self.cooldown = 0
         self.cooldown_max = 1
+        self.first_placed = False
 
     def custom_update(self):
-        if self.on_ground:
-            self.cooldown = 0
-            pos = self.position[0] + self.rect.width // 2, self.position[1] + self.rect.height
-            pos = list(map(int, self.screen.grid.to_local_coordinates(pos)))
+        if not self.first_placed and self.on_ground:
+            self.build(self.move_direction)
+            self.first_placed = True
 
-            for i in range(self.platform_size):
-                pos[0] += i
-                pos[1] -= 1
-                self.screen.grid.set_item(*pos, Stairs(self.screen.grid, tuple(pos)))
-            self.screen.grid.rendered = self.screen.grid.render()
+    def wall_reaction(self, direction):
+        height = self.get_wall_height(direction)
+        if height < self.jump_height * self.screen.grid.cell_size:
+            self.position[1] -= height
+            self.position[0] += direction
+
+            self.rect.x, self.rect.y = self.position
+
+            self.build(direction)
+        else:
+            self.move_direction = -direction
+
+    def build(self, direction):
+        pos = self.position[0] + self.rect.width // 2, self.position[1]
+        pos = list(map(int, self.screen.grid.to_local_coordinates(pos)))
+
+        for i in range(self.platform_size):
+            new = pos[:]
+            new[0] += i * int(direction)
+            new[1] -= 1
+            self.screen.grid.set_item(*new, Stairs(self.screen.grid, tuple(new)))
+
+        self.screen.grid.update_render()
+        self.screen.grid.update_collider()
+
 
 # TODO: функция для удаления окружностей
 # TODO: передача в set_item не экземпляра класса
-# TODO: персонаж заходит в стены
+# TODO: все еще разворачивается, заметно на большом
 # TODO: typing
-# TODO: передавать в button events
 # TODO: каждый лемминг в своем файле
-
+# TODO: зависимость скорости от фпс
+# TODO: fill -rect
 
 class Blocker(StaticCharacter):
     def __init__(self, *args, **kwargs):

@@ -3,15 +3,15 @@ import pygame
 
 class Window:
     def __init__(self, title, size):
-        self.fps = 60
+        self.fps = 100
         pygame.init()
         pygame.display.set_caption(title)
-        flags = pygame.SCALED | pygame.FULLSCREEN
-        self.surface = pygame.display.set_mode(size, flags=flags, vsync=1)
+        # flags = pygame.SCALED | pygame.FULLSCREEN
+        self.surface = pygame.display.set_mode(size)
         self.size = size
         self.clock = pygame.time.Clock()
-        from screens.game_screen import GameScreen
-        self.screen = GameScreen(self, "level")
+        from screens.main_menu_screen import MainMenuScreen
+        self.screen = MainMenuScreen(self)
         self.start()
         self.screen.start()
 
@@ -26,7 +26,8 @@ class Window:
             self.event(events)
             self.screen.event(events)
             pygame.display.flip()
-            self.clock.tick()
+            self.surface.fill("black")
+            self.clock.tick(100)
 
     def update(self):
         pass

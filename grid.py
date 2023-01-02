@@ -13,27 +13,28 @@ class Grid:
         self.left = 10
         self.top = 10
         self.cell_size = 2
-        self.mask = self.compute_mask()
-        self.rendered = self.render()
+        self.update_mask()
+        self.update_render()
+        self.update_collider()
 
     def set_view(self, left, top, cell_size):
         self.left = left
         self.top = top
         self.cell_size = cell_size
+        self.update_collider()
 
     def draw(self, screen):
-        screen.blit(self.rendered, (0, 0))
+        screen.blit(self.rendered, (self.left, self.top))
 
-    def render(self):
+    def update_render(self):
         result = pygame.Surface(SIZE, pygame.SRCALPHA, 32)
         result.convert_alpha()
 
         mask = self.get_mask()
 
         for i in mask:
-            texture = utilities.tile_texture(i, SIZE)
-            utilities.stamp(result, texture, mask[i])
-        return result
+            utilities.stamp(result, i, mask[i])
+        self.rendered = result
 
     def to_local_coordinates(self, coord):
         return (coord[0] - self.left) // self.cell_size, (coord[1] - self.top) // self.cell_size
@@ -44,7 +45,7 @@ class Grid:
     def get_mask(self):
         return self.mask
 
-    def compute_mask(self):
+    def update_mask(self):
         masks = {}
         for i in range(self.width):
             for j in range(self.height):
@@ -53,17 +54,20 @@ class Grid:
                 if self.board[i, j].texture not in masks.keys():
                     masks[self.board[i, j].texture] = pygame.Surface(SIZE, depth=8)
                 self.board[i, j].render(masks[self.board[i, j].texture])
-        return masks
+        self.mask = masks
 
     def set_item(self, x: int, y: int, item):
         old = self.board[x, y]
         if old is not None:
-            pygame.draw.rect(self.mask[old.texture], 0, (*self.to_absolute_coordinates((x, y)), self.cell_size, self.cell_size))
+            pygame.draw.rect(self.mask[old.texture], 0,
+                             (*self.to_absolute_coordinates((x, y)), self.cell_size, self.cell_size))
         if item is not None:
             if item.texture not in self.mask.keys():
                 self.mask[item.texture] = pygame.Surface(SIZE, depth=8)
             item.render(self.mask[item.texture])
         self.board[x, y] = item
+        # self.rendered = self.render()
+        # self.compute_collider()
 
     def get_cell(self, mouse_pos: tuple):
         if not (self.left <= mouse_pos[0] <= self.left + self.width * self.cell_size and
@@ -81,11 +85,14 @@ class Grid:
             pass
 
     def get_collider(self):
+        return self.collider
+
+    def update_collider(self):
         surface = pygame.Surface(SIZE, pygame.SRCALPHA, 32)
         surface = surface.convert_alpha()
 
         self.draw(surface)
-        return MaskCollider(surface)
+        self.collider = MaskCollider(surface)
 
 
 class MaskCollider(pygame.sprite.Sprite):
@@ -102,4 +109,3 @@ class BoxCollider(pygame.sprite.Sprite):
         self.image = pygame.Surface((w, h))
         self.image.fill("red")
         self.rect = pygame.Rect(x, y, w, h)
-

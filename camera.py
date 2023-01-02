@@ -1,19 +1,20 @@
 import pygame
 
+from characters.abstract_characters import StaticCharacter
+
 
 class Camera:
     def __init__(self):
         self.delta = (0, 0)
-        self.size = 2
 
-    def move(self, x: int, y: int) -> None:
-        self.delta = self.delta[0] + x, self.delta[1] + y
+    def set_delta(self, x: int, y: int) -> None:
+        self.delta = x, y
 
-    def resize(self, delta: int) -> None:
-        if delta + self.size > 0:
-             self.size += delta
+    def apply(self, sprite: pygame.sprite.Sprite):
+        sprite.rect.x += self.delta[0]
+        sprite.rect.y += self.delta[1]
 
-    def apply(self, surface: pygame.Surface):
-        new = pygame.transform.scale(surface, (surface.get_width() * self.size, surface.get_height() * self.size))
-        surface.fill("black")
-        surface.blit(new, self.position)
+        if isinstance(sprite, StaticCharacter):
+            sprite.position[0] += self.delta[0]
+            sprite.position[1] += self.delta[1]
+

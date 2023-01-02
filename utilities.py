@@ -6,8 +6,8 @@ from math import sqrt
 import pygame
 
 
-def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
+def load_image(name, colorkey=None, path="data"):
+    fullname = os.path.join(path, name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -51,3 +51,9 @@ def cut_sheet(sheet, columns, rows):
             frame_location = (rect.w * i, rect.h * j)
             frames.append(sheet.subsurface(pygame.Rect(frame_location, rect.size)))
     return frames
+
+
+def draw_text(surface: pygame.Surface, position: tuple[int, int], text: str, size: int, color):
+    font = pygame.font.Font(None, size)
+    text = font.render(text, True, color)
+    surface.blit(text, position)

@@ -1,4 +1,7 @@
 {
   "title": "Test",
-  "description": "123"
+  "count": 100,
+  "complete_count": 90,
+  "spawn": [0, 0],
+  "end": [100, 100]
 }

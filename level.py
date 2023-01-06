@@ -12,11 +12,15 @@ COLORS = {100: Dirt}
 
 
 class Level:
-    def __init__(self, image, img_path, title, description):
-        self.img_path = img_path
-        self.title = title
-        self.description = description
-        self.image = image
+    def __init__(self, path, filename, info):
+        self.img_path = os.path.join(filename, path)
+        self.image = load_image(filename + ".png", path=path)
+
+        self.title = info["title"]
+        self.count = info["count"]
+        self.complete_count = info["complete_count"]
+        self.spawn = tuple(info["spawn"])
+        self.end = tuple(info["end"])
 
     def get_grid(self):
         img = Image.open(self.img_path)
@@ -40,7 +44,7 @@ def load_json(path):
     return data
 
 
-def load_level(path: str, title: str):
-    info = load_json(os.path.join(path, title + ".json"))
+def load_level(path: str, filename: str):
+    info = load_json(os.path.join(path, filename + ".json"))
 
-    return Level(load_image(title + ".png", path=path), os.path.join(path, title + ".png"), info["title"], info["description"])
+    return Level(path, filename, info)

@@ -53,7 +53,3 @@ def cut_sheet(sheet, columns, rows):
     return frames
 
 
-def draw_text(surface: pygame.Surface, position: tuple[int, int], text: str, size: int, color):
-    font = pygame.font.Font(None, size)
-    text = font.render(text, True, color)
-    surface.blit(text, position)

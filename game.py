@@ -3,7 +3,7 @@ import pygame
 
 class Window:
     def __init__(self, title, size):
-        self.fps = 100
+        self.fps = 500
         pygame.init()
         pygame.display.set_caption(title)
         # flags = pygame.SCALED | pygame.FULLSCREEN
@@ -17,16 +17,22 @@ class Window:
 
         running = True
         while running:
+            self.surface.fill("black")
             self.update()
             self.screen.update()
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
                     running = False
+                    self.close()
             self.event(events)
             self.screen.event(events)
+
+            for i in self.screen.layers.values():
+                self.surface.blit(*i)
+
             pygame.display.flip()
-            self.surface.fill("black")
+
             self.clock.tick(100)
 
     def update(self):
@@ -36,4 +42,7 @@ class Window:
         pass
 
     def event(self, event):
+        pass
+
+    def close(self):
         pass

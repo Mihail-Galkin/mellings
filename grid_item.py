@@ -13,18 +13,18 @@ class GridItem:
         self.grid = grid
 
     def render(self, screen):
-        pygame.draw.rect(screen, 255, self.grid.to_absolute_coordinates(self.position) + (self.grid.cell_size,) * 2)
+        pygame.draw.rect(screen, 255, self.grid.global_coord_without_indent(self.position) + (self.grid.cell_size,) * 2)
 
 
 class Dirt(GridItem):
-    texture = utilities.tile_texture(utilities.load_image("dirt.png"), SIZE)
+    texture = utilities.load_image("dirt.png")
 
     def __init__(self, grid: Grid, position: tuple):
         super().__init__(grid, position)
 
 
 class Stairs(GridItem):
-    texture = utilities.tile_texture(utilities.load_image("button.png"), SIZE)
+    texture = utilities.load_image("stairs.png")
 
     def __init__(self, grid: Grid, position: tuple):
         super().__init__(grid, position)

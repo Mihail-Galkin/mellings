@@ -4,13 +4,13 @@ from pygame.surface import Surface
 
 from level import Level
 from screens.abstract_screen import Screen
-from screens.change_screen import change_screen
+from screens.changescreen import change_screen
 from screens.game_screen import GameScreen
 
 
 class LevelWidget(Sprite):
     def __init__(self, screen: Screen, level: Level, size: tuple[int, int], indent: int, color: tuple[int, int, int] = (100, 100, 100), text_size: int = 5):
-        super().__init__(screen.all_sprites)
+        super().__init__(screen.gui_sprites)
         self.screen = screen
         self.level = level
         self.image = Surface(size)

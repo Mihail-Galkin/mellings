@@ -11,7 +11,7 @@ from utilities import load_image
 class LemmingButton(pygame.sprite.Sprite):
     def __init__(self, screen: Screen, texture: str, lemming_class: type,
                  position: tuple[int, int], listener: Callable[[MainWindow, int], None], arg=None):
-        super().__init__(screen.all_sprites, screen.buttons_group)
+        super().__init__(screen.gui_sprites)
 
         self.default_image = load_image(texture)
         self.activated_image = load_image(f"{texture[:-4]}_activated.jpg")

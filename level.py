@@ -13,14 +13,14 @@ COLORS = {100: Dirt}
 
 class Level:
     def __init__(self, path, filename, info):
-        self.img_path = os.path.join(filename, path)
+        self.img_path = os.path.join(path, filename + ".png")
         self.image = load_image(filename + ".png", path=path)
-
         self.title = info["title"]
         self.count = info["count"]
         self.complete_count = info["complete_count"]
         self.spawn = tuple(info["spawn"])
         self.end = tuple(info["end"])
+        self.spawn_cooldown = info["spawn_cooldown"]
 
     def get_grid(self):
         img = Image.open(self.img_path)

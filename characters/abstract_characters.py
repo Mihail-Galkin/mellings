@@ -70,7 +70,7 @@ class StaticCharacter(pygame.sprite.Sprite):
 
     def resize(self, new_scale, change_position=True):
         m = new_scale[0] / self.rect.width
-        ic(m)
+
         if change_position:
             self.rect.x = int(self.rect.x * m)
             self.rect.y = int(self.rect.y * m)
@@ -80,7 +80,7 @@ class StaticCharacter(pygame.sprite.Sprite):
             width, height = i.frames[0].get_width(), i.frames[0].get_height()
 
             i.scale((width * m, height * m))
-            ic(id(i))
+
 
         self.ground_checker.resize((new_scale[0], 1))
         self.mask_surface = pygame.transform.scale(self.mask_surface, new_scale)
@@ -98,8 +98,8 @@ class MovableCharacter(StaticCharacter):
     mass = 100
     jump_height = 10
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, screen: Screen, position: tuple[int, int] = (0, 0), size=1):
+        super().__init__(screen, position, size=size)
         self.g = self.screen.g
         self.move_direction = 1
         self.velocities = {}
@@ -107,8 +107,8 @@ class MovableCharacter(StaticCharacter):
 
         self.rect.x, self.rect.y = self.position
 
-        # self.add_velocity(1, Vector(100, 0))
-        # self.add_velocity(2, Vector(0, -100))
+        self.g *= size
+        self.walk_speed *= size
 
     def custom_update(self):
         # raise NotImplementedError()
@@ -129,7 +129,6 @@ class MovableCharacter(StaticCharacter):
         self.forces[key] = force
 
     def move(self, delta: Vector):
-        # ic(delta, self.on_ground)
         sign = math.copysign(1, delta.x)
 
         for i in range(abs(delta.x)):

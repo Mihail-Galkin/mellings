@@ -38,7 +38,6 @@ class Builder(MovableCharacter):
         else:
             self.move_direction = -direction
             change_character(self, DefaultCharacter, -1)
-            ic(123)
 
     def build(self, direction):
         pos = self.rect.x + self.rect.width + self.platform_size, self.rect.height + self.rect.y

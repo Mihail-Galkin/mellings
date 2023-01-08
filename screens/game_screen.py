@@ -20,6 +20,7 @@ from level import Level
 from main_window import MainWindow
 from screens.abstract_screen import Screen
 from screens.changescreen import change_screen
+from screens.end_screen import EndScreen
 from ui.button import Button
 from ui.lemming_button import LemmingButton
 
@@ -39,9 +40,7 @@ class GameScreen(Screen):
         self.grid = self.level.get_grid()
         self.layers["game"] = (copy.copy(self.grid.get_surface()), (0, 0))
 
-        self.players = {DefaultCharacter(self, (60, 60)): 100}
-
-        self.camera = Camera()
+        self.players = {}
 
         self.grid.update_collider()
 
@@ -50,15 +49,32 @@ class GameScreen(Screen):
 
         self.size_multiplier = 1
 
+        self.spawn_cooldown = self.level.spawn_cooldown
+        self.current_cooldown = 0
+
+        self.spawn_count = self.level.count
+        self.characters_complete = 0
+
     def update(self):
+        if not self.spawn_count and self.players == {}:
+            change_screen(self.game, EndScreen(self.game, self.characters_complete, self.level.count))
+
         self.layers["gui"] = (pygame.Surface(self.game.size, pygame.SRCALPHA, 32).convert_alpha(), (0, 0))
         self.layers["game"] = (copy.copy(self.grid.get_surface()), self.layers["game"][1])
 
-        for i in copy.copy(self.players):
+        self.current_cooldown += 1 / self.game.fps
+        if self.current_cooldown >= self.spawn_cooldown and self.spawn_count:
+            self.current_cooldown = 0
+            self.spawn_count -= 1
+            self.players[DefaultCharacter(self, (
+                self.level.spawn[0] * self.grid.cell_size, self.level.spawn[1] * self.grid.cell_size),
+                                          size=self.size_multiplier)] = -1
+
+        for i in self.players:
             if self.players[i] == -1:
                 continue
             elif -1 < self.players[i] < 0:
-                change_character(i, Floater, -1)
+                change_character(i, DefaultCharacter, -1)
             else:
                 self.players[i] -= 1 / self.game.fps
 
@@ -73,9 +89,13 @@ class GameScreen(Screen):
         if keys[pygame.K_RIGHT]:
             delta[0] -= 1
         self.layers["game"] = (
-        self.layers["game"][0], (self.layers["game"][1][0] + delta[0], self.layers["game"][1][1] + delta[1]))
+            self.layers["game"][0], (self.layers["game"][1][0] + delta[0], self.layers["game"][1][1] + delta[1]))
 
         for i in self.players_group.sprites():
+            if i.rect.collidepoint(self.level.end[0] * self.grid.cell_size, self.level.end[1] * self.grid.cell_size):
+                self.characters_complete += 1
+                i.kill()
+                self.players.pop(i)
             if i.rect.collidepoint(pygame.mouse.get_pos()[0] - self.layers["game"][1][0],
                                    pygame.mouse.get_pos()[1] - self.layers["game"][1][1]):
                 pygame.draw.rect(self.layers["game"][0], "yellow", i.rect, 3)
@@ -103,7 +123,6 @@ class GameScreen(Screen):
                     if isinstance(i, StaticCharacter):
                         i.resize((i.rect.width * m, i.rect.height * m))
                 self.grid.set_cell_size(int(self.grid.cell_size * m))
-                print(self.size_multiplier)
 
     def draw_buttons(self):
         buttons_title = ["basher", "blocker", "bomber", "builder", "climber", "digger", "floater", "miner"]  # const

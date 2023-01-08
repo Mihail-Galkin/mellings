@@ -58,7 +58,7 @@ class Climber(MovableCharacter):
 
     def wall_reaction(self, direction):
         height = self.get_wall_height(direction)
-        ic(height)
+
         if height < self.jump_height * self.screen.grid.cell_size:
             self.position[1] -= height
             self.position[0] += direction

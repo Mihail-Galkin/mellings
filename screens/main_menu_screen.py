@@ -2,10 +2,11 @@ import sys
 
 import pygame.event
 
-from main_window import MainWindow
+from main import MainWindow
 from screens.abstract_screen import Screen
 from screens.changescreen import change_screen
 from screens.level_select_screen import LevelSelectScreen
+from screens.multiplayer_screen import MultiplayerScreen
 from screens.options_screen import OptionsScreen
 from ui.button import Button
 from ui.text import draw_text
@@ -21,16 +22,21 @@ class MainMenuScreen(Screen):
         super().__init__(game)
 
     def start(self):
-        BUTTON_WIDTH = 100
-        self.h_indent = (self.layers["gui"][0].get_width() - BUTTON_WIDTH * 3) // 4
+        BUTTON_WIDTH = 130
+        self.h_indent = (self.layers["gui"][0].get_width() - BUTTON_WIDTH * 4) // 5
         self.v_indent = self.layers["gui"][0].get_height() // 3
         self.play = Button(self, "button.png", (self.h_indent, self.v_indent * 2), change_screen,
                            size=(BUTTON_WIDTH, 50), text="Играть",
                            hover_texture="hover.png", args=[self.game, LevelSelectScreen(self.game)])
-        self.settings = Button(self, "button.png", (self.h_indent * 2 + BUTTON_WIDTH, self.v_indent * 2), change_screen,
+        self.multiplayer = Button(self, "button.png", (self.h_indent * 2 + BUTTON_WIDTH, self.v_indent * 2),
+                                  change_screen,
+                                  size=(BUTTON_WIDTH, 50), text="Сетевая игра",
+                                  hover_texture="hover.png", args=[self.game, MultiplayerScreen(self.game)])
+        self.settings = Button(self, "button.png", (self.h_indent * 3 + BUTTON_WIDTH * 2, self.v_indent * 2),
+                               change_screen,
                                size=(BUTTON_WIDTH, 50), text="Настройки",
                                hover_texture="hover.png", args=[self.game, OptionsScreen(self.game)])
-        self.quit = Button(self, "button.png", (self.h_indent * 3 + BUTTON_WIDTH * 2, self.v_indent * 2), close,
+        self.quit = Button(self, "button.png", (self.h_indent * 4 + BUTTON_WIDTH * 3, self.v_indent * 2), close,
                            size=(BUTTON_WIDTH, 50), text="Выйти",
                            hover_texture="hover.png", args=[self.game])
 

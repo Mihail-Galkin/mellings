@@ -1,6 +1,6 @@
 from animation import Animation
 from characters.abstract_characters import MovableCharacter
-from grid import draw_circle
+from grid.grid import draw_circle
 from utilities import load_image
 
 

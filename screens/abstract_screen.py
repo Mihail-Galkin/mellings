@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 import pygame
 
-from main_window import MainWindow
+from main import MainWindow
 
 
 class Screen(ABC):

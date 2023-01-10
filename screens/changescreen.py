@@ -1,4 +1,4 @@
-from main_window import MainWindow
+from main import MainWindow
 from screens.abstract_screen import Screen
 
 

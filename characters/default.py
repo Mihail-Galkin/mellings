@@ -9,3 +9,6 @@ class DefaultCharacter(MovableCharacter):
         self.animations = (self.current_animation,)
 
         super().__init__(*args, **kwargs)
+
+    def custom_update(self):
+        return

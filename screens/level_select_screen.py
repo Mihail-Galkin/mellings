@@ -1,12 +1,15 @@
+import csv
+import os
 from os import listdir
 from os.path import isfile, join
 
 import pygame.event
 
 from level import load_level
-from main_window import MainWindow
+from main import MainWindow
 from screens.abstract_screen import Screen
 from screens.changescreen import change_screen
+from screens.game_screen import GameScreen
 
 from ui.button import Button
 from ui.level_widget import LevelWidget
@@ -28,12 +31,13 @@ class LevelSelectScreen(Screen):
         from screens.main_menu_screen import MainMenuScreen
         self.back = Button(self, "button.png", (20, 20), change_screen, size=(80, 30), text="Выйти",
                            hover_texture="hover.png", args=[self.game, MainMenuScreen(self.game)])
-
-        files = [f.rsplit(".", maxsplit=1)[0] for f in listdir(LEVELS_FOLDER) if isfile(join(LEVELS_FOLDER, f))]
-        files = list(set(files))
         levels = []
-        for i in range(len(files)):
-            levels.append(load_level(LEVELS_FOLDER, files[i]))
+        with open(os.path.join(LEVELS_FOLDER, "levels.csv"), encoding="utf8") as csvfile:
+            reader = list(csv.reader(csvfile, delimiter=',', quotechar='"'))[1:]
+            for row in reader:
+                levels.append(load_level(LEVELS_FOLDER, row[0], completed=bool(row[1] == "1")))
+                print((row))
+
         levels.sort(key=lambda level: level.title)
         on_page = self.game.size[0] // 105
         self.pages = [levels[i:i + on_page] for i in range(0, len(levels), on_page)]
@@ -49,7 +53,7 @@ class LevelSelectScreen(Screen):
         indent = (self.game.size[0] - on_page * 100 - (on_page - 1) * 5) // 2
         for i in range(len(self.pages[self.current_page])):
             self.widgets_on_page.append(
-                LevelWidget(self, self.pages[self.current_page][i], (100, 100), 5, text_size=20, color=(173, 216, 230)))
+                LevelWidget(self, self.pages[self.current_page][i], (100, 100), 5, text_size=20, color=(173, 216, 230), completed=self.pages[self.current_page][i].completed))
             self.widgets_on_page[-1].rect.x = 105 * i + indent
             self.widgets_on_page[-1].rect.y = 100
 
@@ -69,3 +73,6 @@ class LevelSelectScreen(Screen):
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT and self.current_page < self.max_page - 1:
                 self.current_page += 1
                 self.update_page()
+
+    def level_selected(self, level):
+        change_screen(self.game, GameScreen(self.game, level))

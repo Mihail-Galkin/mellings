@@ -1,6 +1,6 @@
 from animation import Animation
 from characters.abstract_characters import MovableCharacter
-from grid import draw_circle
+from grid.grid import draw_circle
 from utilities import load_image
 
 
@@ -14,7 +14,7 @@ class Basher(MovableCharacter):
         super().__init__(*args, **kwargs)
 
         self.current_cooldown = 0
-        self.cooldown = 5
+        self.cooldown = 3
 
     def custom_update(self):
         self.current_cooldown += 1 / self.game.fps

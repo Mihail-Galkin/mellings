@@ -1,8 +1,9 @@
 import pygame
 
 import utilities
-from grid import Grid
-from main_window import SIZE
+from grid.grid import Grid
+
+from main import SIZE
 
 
 class GridItem:
@@ -16,15 +17,8 @@ class GridItem:
         pygame.draw.rect(screen, 255, self.grid.global_coord_without_indent(self.position) + (self.grid.cell_size,) * 2)
 
 
-class Dirt(GridItem):
-    texture = utilities.load_image("dirt.png")
-
-    def __init__(self, grid: Grid, position: tuple):
-        super().__init__(grid, position)
-
-
 class Stairs(GridItem):
-    texture = utilities.load_image("stairs.png")
+    texture = utilities.load_image("data/grid_textures/stairs.png", path="")
 
     def __init__(self, grid: Grid, position: tuple):
         super().__init__(grid, position)

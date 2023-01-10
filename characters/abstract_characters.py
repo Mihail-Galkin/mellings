@@ -81,14 +81,9 @@ class StaticCharacter(pygame.sprite.Sprite):
 
             i.scale((width * m, height * m))
 
-
         self.ground_checker.resize((new_scale[0], 1))
         self.mask_surface = pygame.transform.scale(self.mask_surface, new_scale)
         self.mask = pygame.mask.from_surface(self.mask_surface)
-
-        if isinstance(self, MovableCharacter):
-            self.g *= m
-            self.walk_speed *= m
 
         self.rect.width, self.rect.height = new_scale
 
@@ -96,23 +91,22 @@ class StaticCharacter(pygame.sprite.Sprite):
 class MovableCharacter(StaticCharacter):
     walk_speed = 40
     mass = 100
-    jump_height = 10
+    jump_height = 5
+    max_fall_distance = 20
 
     def __init__(self, screen: Screen, position: tuple[int, int] = (0, 0), size=1):
         super().__init__(screen, position, size=size)
         self.g = self.screen.g
+        print(self.g)
+        self.max_fall_velocity = (2 * self.g * self.max_fall_distance) ** 0.5
         self.move_direction = 1
         self.velocities = {}
         self.forces = {"g": Vector(0, self.mass * self.g)}
 
         self.rect.x, self.rect.y = self.position
 
-        self.g *= size
-        self.walk_speed *= size
-
     def custom_update(self):
-        # raise NotImplementedError()
-        pass
+        raise NotImplementedError()
 
     def update(self):
         self.ground_check()
@@ -121,12 +115,6 @@ class MovableCharacter(StaticCharacter):
 
         self.animation_update()
         self.current_animation.flipped = (self.move_direction == -1)
-
-    def add_velocity(self, key, velocity: Vector):
-        self.velocities[key] = velocity
-
-    def add_force(self, key, force):
-        self.forces[key] = force
 
     def move(self, delta: Vector):
         sign = math.copysign(1, delta.x)
@@ -148,8 +136,25 @@ class MovableCharacter(StaticCharacter):
                 self.position[1] = self.rect.y
                 break
 
+        for _ in range(200):
+            if not self.screen.is_collide(self):
+                break
+            self.rect.y -= 1
+            self.position[1] -= 1
+
+        rect = self.screen.layers["game"][0].get_rect()
+        if not self.rect.colliderect(rect):
+            self.kill()
+            self.ground_checker.kill()
+            self.screen.players.pop(self)
+
     def collision_check(self):
         if self.on_ground:
+            if "g" in self.velocities.keys() and \
+                    self.velocities["g"].y > self.max_fall_velocity * self.screen.size_multiplier:
+                self.kill()
+                self.ground_checker.kill()
+                self.screen.players.pop(self)
             self.velocities["g"] = Vector(0, 0)
             self.forces["g"] = Vector(0, 0)
             self.velocities["walk"] = Vector(self.move_direction * self.walk_speed, 0)
@@ -161,8 +166,8 @@ class MovableCharacter(StaticCharacter):
             self.velocities[i] = self.velocities.get(i, Vector(0, 0)) + self.forces[i] / self.mass / self.game.fps
         total = sum(self.velocities.values()) / self.game.fps
 
-        self.position[0] += total.x
-        self.position[1] += total.y
+        self.position[0] += total.x * self.screen.size_multiplier
+        self.position[1] += total.y * self.screen.size_multiplier
 
         delta = Vector(int(self.position[0] - self.rect.x), int(self.position[1] - self.rect.y))
         self.move(delta)

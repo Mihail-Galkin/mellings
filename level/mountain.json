@@ -1,0 +1,9 @@
+{
+  "title": "Mountain",
+  "count": 20,
+  "complete_count": 15,
+  "spawn": [50, 100],
+  "end": [280, 125],
+  "spawn_cooldown": 1,
+  "buttons_count": [5, 5, 0, 0, 0, 0, 0, 0]
+}

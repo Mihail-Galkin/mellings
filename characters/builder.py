@@ -2,7 +2,7 @@ from animation import Animation
 from characters.abstract_characters import MovableCharacter
 from characters.change_character import change_character
 from characters.default import DefaultCharacter
-from grid_item import Stairs
+from grid.grid_item import Stairs
 from utilities import load_image
 
 
@@ -19,7 +19,7 @@ class Builder(MovableCharacter):
         self.cooldown_max = 1
         self.first_placed = False
 
-        self.walk_speed //= 8
+        self.walk_speed //= 10
 
     def custom_update(self):
         if not self.first_placed and self.on_ground:

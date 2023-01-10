@@ -1,8 +1,0 @@
-{
-  "title": "Test",
-  "count": 100,
-  "complete_count": 90,
-  "spawn": [100, 100],
-  "end": [100, 100],
-  "spawn_cooldown": 0.1
-}

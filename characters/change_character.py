@@ -7,8 +7,6 @@ def change_character(old: StaticCharacter, new: type[StaticCharacter], time):
 
     if isinstance(new, MovableCharacter):
         new.move_direction = old.move_direction
-        new.g *= old.screen.size_multiplier
-        new.walk_speed *= old.screen.size_multiplier
 
     old.ground_checker.kill()
 

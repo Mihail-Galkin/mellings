@@ -1,4 +1,6 @@
 import copy
+import csv
+import os
 import sys
 
 import pygame
@@ -17,16 +19,19 @@ from characters.floater import Floater
 from characters.miner import Miner
 
 from level import Level
-from main_window import MainWindow
+from main import MainWindow
 from screens.abstract_screen import Screen
 from screens.changescreen import change_screen
 from screens.end_screen import EndScreen
 from ui.button import Button
 from ui.lemming_button import LemmingButton
+from utilities import load_image
+
+LEVELS_FOLDER = "level"
 
 
 class GameScreen(Screen):
-    g = 1000
+    g = 400
 
     def __init__(self, game: MainWindow, level: Level):
         self.level = level
@@ -55,9 +60,31 @@ class GameScreen(Screen):
         self.spawn_count = self.level.count
         self.characters_complete = 0
 
+        self.spawn_sprite = pygame.sprite.Sprite(self.game_sprites)
+        self.spawn_sprite.image = load_image("spawn.png")
+        self.spawn_sprite.rect = self.spawn_sprite.image.get_rect()
+        self.spawn_sprite.rect.center = self.level.spawn[0] * self.grid.cell_size, self.level.spawn[
+            1] * self.grid.cell_size
+
+        self.end_sprite = pygame.sprite.Sprite(self.game_sprites)
+        self.end_sprite.image = load_image("exit.png")
+        self.end_sprite.rect = self.spawn_sprite.image.get_rect()
+        self.end_sprite.rect.center = self.level.end[0] * self.grid.cell_size, self.level.end[1] * self.grid.cell_size
+
     def update(self):
         if not self.spawn_count and self.players == {}:
-            change_screen(self.game, EndScreen(self.game, self.characters_complete, self.level.count))
+            if self.level.complete_count <= self.characters_complete:
+                with open(os.path.join(LEVELS_FOLDER, "levels.csv"), encoding="utf8") as csvfile:
+                    reader = list(csv.reader(csvfile, delimiter=',', quotechar='"'))[1:]
+                for i in range(len(reader)):
+                    if reader[i][0] == self.level.filename:
+                        reader[i] = reader[i][0], 1
+                reader = [("level", "completed")] + reader
+                with open(os.path.join(LEVELS_FOLDER, "levels.csv"), 'w', newline='', encoding="utf8") as csvfile:
+                    writer = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    writer.writerows(reader)
+            change_screen(self.game,
+                          EndScreen(self.game, self.characters_complete, self.level.count, self.level.complete_count))
 
         self.layers["gui"] = (pygame.Surface(self.game.size, pygame.SRCALPHA, 32).convert_alpha(), (0, 0))
         self.layers["game"] = (copy.copy(self.grid.get_surface()), self.layers["game"][1])
@@ -100,8 +127,9 @@ class GameScreen(Screen):
                                    pygame.mouse.get_pos()[1] - self.layers["game"][1][1]):
                 pygame.draw.rect(self.layers["game"][0], "yellow", i.rect, 3)
 
-                if isinstance(i, DefaultCharacter) and self.current_button and pygame.mouse.get_pressed()[0]:
+                if isinstance(i, DefaultCharacter) and self.current_button and pygame.mouse.get_pressed()[0] and self.current_button.count > 0:
                     change_character(i, self.current_button.lemming_class, 5000)
+                    self.current_button.count -= 1
                 break
 
         self.gui_sprites.draw(self.layers["gui"][0])
@@ -124,12 +152,24 @@ class GameScreen(Screen):
                         i.resize((i.rect.width * m, i.rect.height * m))
                 self.grid.set_cell_size(int(self.grid.cell_size * m))
 
+                self.spawn_sprite.image = pygame.transform.scale(self.spawn_sprite.image, (
+                self.spawn_sprite.rect.width * m, self.spawn_sprite.rect.height * m))
+                self.end_sprite.image = pygame.transform.scale(self.end_sprite.image, (
+                self.end_sprite.rect.width * m, self.end_sprite.rect.height * m))
+                self.spawn_sprite.rect = self.spawn_sprite.image.get_rect()
+                self.end_sprite.rect = self.end_sprite.image.get_rect()
+
+                self.spawn_sprite.rect.center = self.level.spawn[0] * self.grid.cell_size, self.level.spawn[
+                    1] * self.grid.cell_size
+                self.end_sprite.rect.center = self.level.end[0] * self.grid.cell_size, self.level.end[
+                    1] * self.grid.cell_size
+
     def draw_buttons(self):
-        buttons_title = ["basher", "blocker", "bomber", "builder", "climber", "digger", "floater", "miner"]  # const
+        buttons_title = ["basher", "blocker", "bomber", "builder", "climber", "digger", "floater", "miner"]
         buttons_class = [Basher, Blocker, Bomber, Builder, Climber, Digger, Floater, Miner]
         self.buttons = [
             LemmingButton(self, f"buttons\\{buttons_title[i]}.jpg", buttons_class[i], (i * 32, self.game.size[1] - 40),
-                          self.change_selected, arg=i) for i in range(len(buttons_title))]
+                          self.change_selected, self.level.buttons_count[i], arg=i) for i in range(len(buttons_title))]
 
         self.boom_button = Button(self, "buttons\\bomb.jpg", (8 * 32, self.game.size[1] - 40),
                                   lambda: [change_character(i, Bomber, -1) for i in self.players_group.sprites()])

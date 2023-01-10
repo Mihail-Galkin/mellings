@@ -1,0 +1,8 @@
+texture,r,g,b
+coarse_dirt.png,100,0,0
+deepslate.png,50,50,50
+dirt.png,0,100,0
+dirt_rocks.png,100,100,0
+rooted_dirt.png,100,100,100
+stone.png,0,0,100
+stone_bricks.png,0,0,200

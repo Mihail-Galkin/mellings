@@ -6,11 +6,15 @@ from level import Level
 from screens.abstract_screen import Screen
 from screens.changescreen import change_screen
 from screens.game_screen import GameScreen
+from ui.text import draw_text
 
 
 class LevelWidget(Sprite):
-    def __init__(self, screen: Screen, level: Level, size: tuple[int, int], indent: int, color: tuple[int, int, int] = (100, 100, 100), text_size: int = 5):
+    def __init__(self, screen: Screen, level: Level, size: tuple[int, int], indent: int,
+                 color: tuple[int, int, int] = (100, 100, 100), text_size: int = 5, completed: bool = False):
         super().__init__(screen.gui_sprites)
+        if completed:
+            color = "lightgreen"
         self.screen = screen
         self.level = level
         self.image = Surface(size)
@@ -21,12 +25,14 @@ class LevelWidget(Sprite):
         text = font.render(level.title, True, (0, 0, 0))
         self.image.blit(text, (indent, size[1] - indent - text.get_height()))
 
-        self.image.blit(pygame.transform.scale(level.image, (size[0] - 2 * indent, size[1] - 3 * indent - text.get_height())), (indent, indent))
+        self.image.blit(
+            pygame.transform.scale(level.image, (size[0] - 2 * indent, size[1] - 3 * indent - text.get_height())),
+            (indent, indent))
         self.clicked = True
 
     def update(self):
         if not pygame.mouse.get_pressed()[0]:
             self.clicked = False
         if self.rect.collidepoint(*pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0] and not self.clicked:
-            change_screen(self.screen.game, GameScreen(self.screen.game, self.level))
+            self.screen.level_selected(self.level)
 

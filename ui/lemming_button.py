@@ -2,16 +2,19 @@ from typing import Callable
 
 import pygame
 
-from main_window import MainWindow
+from main import MainWindow
 from screens.abstract_screen import Screen
 from ui.button import Button
+from ui.text import draw_text
 from utilities import load_image
 
 
 class LemmingButton(pygame.sprite.Sprite):
     def __init__(self, screen: Screen, texture: str, lemming_class: type,
-                 position: tuple[int, int], listener: Callable[[MainWindow, int], None], arg=None):
+                 position: tuple[int, int], listener: Callable[[MainWindow, int], None], count: int, arg=None):
         super().__init__(screen.gui_sprites)
+
+        self.count = count
 
         self.default_image = load_image(texture)
         self.activated_image = load_image(f"{texture[:-4]}_activated.jpg")
@@ -41,3 +44,5 @@ class LemmingButton(pygame.sprite.Sprite):
         if self.rect.collidepoint(*pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0] and not self.clicked:
             self.listener(self.screen.game, self.arg)
             self.clicked = True
+
+        draw_text(self.screen.layers["gui"][0], (self.rect.x + 11, self.rect.y + 3), str(self.count), 12, "white")

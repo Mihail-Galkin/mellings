@@ -8,7 +8,7 @@ from icecream import install
 
 from utilities import load_image, tile_texture
 
-SIZE = 960, 540
+SIZE = 500, 500
 FPS = 120
 
 

@@ -2,8 +2,7 @@ import math
 
 from animation import Animation
 from characters.abstract_characters import MovableCharacter
-from grid import draw_circle
-from grid_item import Dirt
+from grid.grid import draw_circle
 from ui.text import draw_text
 from utilities import load_image
 
@@ -28,7 +27,7 @@ class Bomber(MovableCharacter):
             pos = self.screen.grid.local_coord(pos_global)
             draw_circle(self.screen.grid, pos, self.radius, None)
             from particle import create_particles
-            create_particles(self.screen, Dirt.texture, pos_global)
+            create_particles(self.screen, load_image("data/grid_textures/deepslate.png", path=""), pos_global)
 
             self.kill()
             self.ground_checker.kill()

@@ -28,7 +28,7 @@ class Window:
             self.event(events)
             self.screen.event(events)
 
-            for i in self.screen.layers.values():
+            for i in list(self.screen.layers.values())[::-1]:
                 self.surface.blit(*i)
 
             pygame.display.flip()

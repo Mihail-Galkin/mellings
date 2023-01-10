@@ -37,7 +37,9 @@ class Grid:
         mask = self.get_mask()
         print(mask)
         for i in mask:
-            utilities.stamp(result, utilities.tile_texture(i, (self.cell_size * self.width, self.cell_size * self.height)), mask[i])
+            utilities.stamp(result,
+                            utilities.tile_texture(i, (self.cell_size * self.width, self.cell_size * self.height)),
+                            mask[i])
         self.rendered = result
 
     def local_coord(self, coord):
@@ -45,8 +47,6 @@ class Grid:
 
     def global_coord_without_indent(self, coord):
         return coord[0] * self.cell_size, coord[1] * self.cell_size
-
-
 
     def get_mask(self):
         return self.mask
@@ -58,18 +58,24 @@ class Grid:
                 if self.board[i, j] is None:
                     continue
                 if self.board[i, j].texture not in masks.keys():
-                    masks[self.board[i, j].texture] = pygame.Surface((self.cell_size * self.width, self.cell_size * self.height), depth=8)
+                    masks[self.board[i, j].texture] = pygame.Surface(
+                        (self.cell_size * self.width, self.cell_size * self.height), depth=8)
                 self.board[i, j].render(masks[self.board[i, j].texture])
         self.mask = masks
 
     def set_item(self, x: int, y: int, item):
-        old = self.board[int(x), int(y)]
+        x = int(x)
+        y = int(y)
+        if not (0 <= x < self.width and 0 <= y < self.height):
+            return
+        old = self.board[x, y]
         if old is not None:
             pygame.draw.rect(self.mask[old.texture], 0,
                              (*self.global_coord_without_indent((x, y)), self.cell_size, self.cell_size))
         if item is not None:
             if item.texture not in self.mask.keys():
-                self.mask[item.texture] = pygame.Surface((self.cell_size * self.width, self.cell_size * self.height), depth=8)
+                self.mask[item.texture] = pygame.Surface((self.cell_size * self.width, self.cell_size * self.height),
+                                                         depth=8)
             item.render(self.mask[item.texture])
         self.board[int(x), int(y)] = item
 

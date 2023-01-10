@@ -1,12 +1,11 @@
 from animation import Animation
 from characters.abstract_characters import MovableCharacter
-from grid import draw_circle
+from grid.grid import draw_circle
 from utilities import load_image
 
 
 class Digger(MovableCharacter):
-    radius = 6
-
+    radius = 8
 
     def __init__(self, *args, **kwargs):
         self.current_animation = Animation(load_image("dig.png"), (8, 1))

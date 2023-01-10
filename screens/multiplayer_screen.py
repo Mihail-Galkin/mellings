@@ -6,7 +6,8 @@ from screens.changescreen import change_screen
 from screens.level_select_screen import LevelSelectScreen
 
 from screens.options_screen import OptionsScreen
-from screens.wait_screen import WaitScreen
+from screens.wait_client_screen import WaitClientScreen
+from screens.wait_host_screen import WaitHostScreen
 from ui.button import Button
 from ui.text import draw_text
 
@@ -22,10 +23,10 @@ class MultiplayerScreen(Screen):
         self.v_indent = self.layers["gui"][0].get_height() // 2
         self.play = Button(self, "button.png", (self.h_indent, self.v_indent), change_screen,
                            size=(BUTTON_WIDTH, 50), text="Создать",
-                           hover_texture="hover.png", args=[self.game, WaitScreen(self.game)])
+                           hover_texture="hover.png", args=[self.game, WaitClientScreen(self.game)])
         self.settings = Button(self, "button.png", (self.h_indent * 2 + BUTTON_WIDTH, self.v_indent), change_screen,
                                size=(BUTTON_WIDTH, 50), text="Зайти",
-                               hover_texture="hover.png", args=[self.game, OptionsScreen(self.game)])
+                               hover_texture="hover.png", args=[self.game, WaitHostScreen(self.game)])
         self.back = Button(self, "button.png", (20, 20), change_screen, size=(80, 30), text="Выйти",
                            hover_texture="hover.png", args=[self.game, MainMenuScreen(self.game)])
 

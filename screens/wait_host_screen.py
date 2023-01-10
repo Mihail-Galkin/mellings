@@ -4,6 +4,7 @@ import threading
 
 import pygame
 
+from level import load_level
 from main import MainWindow
 from screens.abstract_screen import Screen
 from screens.changescreen import change_screen
@@ -20,14 +21,14 @@ class WaitHostScreen(Screen):
 
     def start(self):
         self.sock = socket.socket()
-        self.sock.connect(('192.168.0.6', 9090))
+        self.sock.connect(('192.168.0.5', 9090))
 
         draw_text(self.layers["gui"][0], (0, 20), "Ожидание хоста", 30, "white", centered=True)
 
     def update(self):
         self.sock.send("ready".encode())
         try:
-            level = pickle.loads(self.sock.recv(1024))
+            level = load_level("level", self.sock.recv(1024).decode())
             change_screen(self.game, GameScreen(self.game, level))
         except pickle.UnpicklingError:
             pass

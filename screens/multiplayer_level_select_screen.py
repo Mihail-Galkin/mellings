@@ -14,4 +14,4 @@ class MultiplayerLevelSelectScreen(LevelSelectScreen):
 
     def level_selected(self, level):
         change_screen(self.game, GameScreen(self.game, level))
-        self.sock.send(pickle.dumps(level))
+        self.sock.send(level.filename.encode())

@@ -3,8 +3,6 @@ import pygame
 import utilities
 from grid.grid import Grid
 
-from main import SIZE
-
 
 class GridItem:
     texture = None

@@ -2,14 +2,19 @@ import pygame
 
 
 class Window:
+    """
+    Класс созданный для улучшения читаемости кода MainWindow класса.
+    Класс вызывает свлои методы start, update, event и методы screen
+    """
     def __init__(self, title, size):
-        self.fps = 500
+        self.fps = 100
         pygame.init()
         pygame.display.set_caption(title)
-        # flags = pygame.SCALED | pygame.FULLSCREEN
         self.surface = pygame.display.set_mode(size)
         self.size = size
         self.clock = pygame.time.Clock()
+
+        # Игра запускается с main_menu screen
         from screens.main_menu_screen import MainMenuScreen
         self.screen = MainMenuScreen(self)
         self.start()

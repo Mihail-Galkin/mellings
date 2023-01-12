@@ -8,7 +8,7 @@ import pygame.event
 from level import load_level
 from main import MainWindow
 from screens.abstract_screen import Screen
-from screens.changescreen import change_screen
+from screens.change_screen import change_screen
 from screens.game_screen import GameScreen
 
 from ui.button import Button
@@ -36,7 +36,7 @@ class LevelSelectScreen(Screen):
             reader = list(csv.reader(csvfile, delimiter=',', quotechar='"'))[1:]
             for row in reader:
                 levels.append(load_level(LEVELS_FOLDER, row[0], completed=bool(row[1] == "1")))
-                print((row))
+
 
         levels.sort(key=lambda level: level.title)
         on_page = self.game.size[0] // 105

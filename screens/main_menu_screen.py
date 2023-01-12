@@ -4,9 +4,9 @@ import pygame.event
 
 from main import MainWindow
 from screens.abstract_screen import Screen
-from screens.changescreen import change_screen
+from screens.change_screen import change_screen
 from screens.level_select_screen import LevelSelectScreen
-from screens.multiplayer_screen import MultiplayerScreen
+from screens.mulitiplayer.multiplayer_screen import MultiplayerScreen
 from screens.options_screen import OptionsScreen
 from ui.button import Button
 from ui.text import draw_text

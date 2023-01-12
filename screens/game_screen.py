@@ -1,11 +1,9 @@
 import copy
 import csv
 import os
-import sys
 
 import pygame
 
-from camera import Camera
 from characters.abstract_characters import StaticCharacter
 from characters.basher import Basher
 from characters.blocker import Blocker
@@ -21,7 +19,7 @@ from characters.miner import Miner
 from level import Level
 from main import MainWindow
 from screens.abstract_screen import Screen
-from screens.changescreen import change_screen
+from screens.change_screen import change_screen
 from screens.end_screen import EndScreen
 from ui.button import Button
 from ui.lemming_button import LemmingButton
@@ -63,16 +61,20 @@ class GameScreen(Screen):
         self.spawn_sprite = pygame.sprite.Sprite(self.game_sprites)
         self.spawn_sprite.image = load_image("spawn.png")
         self.spawn_sprite.rect = self.spawn_sprite.image.get_rect()
-        self.spawn_sprite.rect.center = self.level.spawn[0] * self.grid.cell_size, self.level.spawn[
+        self.spawn_sprite.rect.midbottom = self.level.spawn[0] * self.grid.cell_size, self.level.spawn[
             1] * self.grid.cell_size
 
         self.end_sprite = pygame.sprite.Sprite(self.game_sprites)
         self.end_sprite.image = load_image("exit.png")
         self.end_sprite.rect = self.spawn_sprite.image.get_rect()
-        self.end_sprite.rect.center = self.level.end[0] * self.grid.cell_size, self.level.end[1] * self.grid.cell_size
+        self.end_sprite.rect.midbottom = self.level.end[0] * self.grid.cell_size, self.level.end[1] * self.grid.cell_size
+
+        self.spawn_default_size = self.spawn_sprite.rect.width, self.spawn_sprite.rect.height
+        self.end_default_size = self.end_sprite.rect.width, self.end_sprite.rect.height
 
     def update(self):
-        if not self.spawn_count and self.players == {}:
+        from screens.mulitiplayer.multiplayer_game_screen import MultiplayerGameScreen
+        if not self.spawn_count and self.players == {} and not isinstance(self, MultiplayerGameScreen):
             if self.level.complete_count <= self.characters_complete:
                 with open(os.path.join(LEVELS_FOLDER, "levels.csv"), encoding="utf8") as csvfile:
                     reader = list(csv.reader(csvfile, delimiter=',', quotechar='"'))[1:]
@@ -128,7 +130,7 @@ class GameScreen(Screen):
                 pygame.draw.rect(self.layers["game"][0], "yellow", i.rect, 3)
 
                 if isinstance(i, DefaultCharacter) and self.current_button and pygame.mouse.get_pressed()[0] and self.current_button.count > 0:
-                    change_character(i, self.current_button.lemming_class, 5000)
+                    change_character(i, self.current_button.lemming_class, -1 if self.current_button.lemming_class == Blocker else 10)
                     self.current_button.count -= 1
                 break
 
@@ -137,6 +139,11 @@ class GameScreen(Screen):
 
         self.gui_sprites.update()
         self.game_sprites.update()
+
+        self.custom_update()
+
+    def custom_update(self):
+        return
 
     def event(self, events: list[pygame.event.Event]):
         for event in events:
@@ -152,16 +159,18 @@ class GameScreen(Screen):
                         i.resize((i.rect.width * m, i.rect.height * m))
                 self.grid.set_cell_size(int(self.grid.cell_size * m))
 
-                self.spawn_sprite.image = pygame.transform.scale(self.spawn_sprite.image, (
-                self.spawn_sprite.rect.width * m, self.spawn_sprite.rect.height * m))
-                self.end_sprite.image = pygame.transform.scale(self.end_sprite.image, (
-                self.end_sprite.rect.width * m, self.end_sprite.rect.height * m))
+                self.spawn_sprite.image = pygame.transform.scale(self.spawn_sprite.image,
+                                                                 (self.spawn_default_size[0] * self.size_multiplier,
+                                                                  self.spawn_default_size[1] * self.size_multiplier))
+                self.end_sprite.image = pygame.transform.scale(self.end_sprite.image,
+                                                               (self.end_default_size[0] * self.size_multiplier,
+                                                                self.end_default_size[1] * self.size_multiplier))
                 self.spawn_sprite.rect = self.spawn_sprite.image.get_rect()
                 self.end_sprite.rect = self.end_sprite.image.get_rect()
 
-                self.spawn_sprite.rect.center = self.level.spawn[0] * self.grid.cell_size, self.level.spawn[
+                self.spawn_sprite.rect.midbottom = self.level.spawn[0] * self.grid.cell_size, self.level.spawn[
                     1] * self.grid.cell_size
-                self.end_sprite.rect.center = self.level.end[0] * self.grid.cell_size, self.level.end[
+                self.end_sprite.rect.midbottom = self.level.end[0] * self.grid.cell_size, self.level.end[
                     1] * self.grid.cell_size
 
     def draw_buttons(self):

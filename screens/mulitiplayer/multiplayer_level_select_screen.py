@@ -1,9 +1,8 @@
-import pickle
 import socket
 
-from screens.changescreen import change_screen
-from screens.game_screen import GameScreen
+from screens.change_screen import change_screen
 from screens.level_select_screen import LevelSelectScreen
+from screens.mulitiplayer.multiplayer_game_screen import MultiplayerGameScreen
 
 
 class MultiplayerLevelSelectScreen(LevelSelectScreen):
@@ -13,5 +12,5 @@ class MultiplayerLevelSelectScreen(LevelSelectScreen):
         self.sock = sock
 
     def level_selected(self, level):
-        change_screen(self.game, GameScreen(self.game, level))
-        self.sock.send(level.filename.encode())
+        change_screen(self.game, MultiplayerGameScreen(self.game, level, self.sock, thread=self.thread))
+        self.sock.send(("level " + level.filename).encode())

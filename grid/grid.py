@@ -35,7 +35,6 @@ class Grid:
         result.convert_alpha()
 
         mask = self.get_mask()
-        print(mask)
         for i in mask:
             utilities.stamp(result,
                             utilities.tile_texture(i, (self.cell_size * self.width, self.cell_size * self.height)),

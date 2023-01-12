@@ -1,5 +1,3 @@
-# module_name, package_name, ClassName, method_name, ExceptionName, function_name,
-# GLOBAL_CONSTANT_NAME, global_var_name, instance_var_name, function_parameter_name, local_var_name
 import math
 import pygame
 
@@ -97,7 +95,6 @@ class MovableCharacter(StaticCharacter):
     def __init__(self, screen: Screen, position: tuple[int, int] = (0, 0), size=1):
         super().__init__(screen, position, size=size)
         self.g = self.screen.g
-        print(self.g)
         self.max_fall_velocity = (2 * self.g * self.max_fall_distance) ** 0.5
         self.move_direction = 1
         self.velocities = {}

@@ -12,15 +12,24 @@ class Animation:
 
         self.flipped = False
 
-    def apply(self, sprite: pygame.sprite.Sprite):
+    def apply(self, sprite: pygame.sprite.Sprite) -> None:
+        """
+        Изменение изображения спрайта на текущий кадр
+        """
         if self.flipped:
             sprite.image = self.flipped_frames[self.current_frame]
         else:
             sprite.image = self.frames[self.current_frame]
 
-    def next_frame(self):
+    def next_frame(self) -> None:
+        """
+        Переход на следующий кадр
+        """
         self.current_frame = (self.current_frame + 1) % self.frames_count
 
-    def scale(self, new_scale: tuple[int, int]):
+    def scale(self, new_scale: tuple[int, int]) -> None:
+        """
+        Изменение размера кадров анимации
+        """
         self.frames = [pygame.transform.scale(i, new_scale) for i in self.frames]
         self.flipped_frames = [pygame.transform.scale(i, new_scale) for i in self.flipped_frames]

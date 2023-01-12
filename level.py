@@ -10,7 +10,11 @@ from utilities import load_image
 
 
 class Level:
-    def __init__(self, path, filename, info, completed):
+    """
+    Класс, содержащий основную информацию о уровне
+    """
+
+    def __init__(self, path: str, filename: str, info: dict, completed: bool):
         self.filename = filename
         self.img_path = os.path.join(path, filename + ".png")
         self.image = load_image(filename + ".png", path=path)
@@ -23,13 +27,12 @@ class Level:
         self.completed = completed
         self.buttons_count = info["buttons_count"]
 
-    def get_grid(self):
+    def get_grid(self) -> Grid:
         colors = {}
         with open('data/grid_textures/colors.csv', encoding="utf8") as csvfile:
             reader = list(csv.reader(csvfile, delimiter=',', quotechar='"'))[1:]
             for texture, r, g, b in reader:
                 colors[(int(r), int(g), int(b))] = load_image(texture, path="data/grid_textures/")
-        print(colors)
 
         img = Image.open(self.img_path)
         pixels = img.load()
@@ -51,13 +54,13 @@ class Level:
         return grid
 
 
-def load_json(path):
+def load_json(path: str) -> dict:
     with open(path, "r", encoding="utf8") as json_file:
         data = json.load(json_file)
     return data
 
 
-def load_level(path: str, filename: str, completed: bool = False):
+def load_level(path: str, filename: str, completed: bool = False) -> Level:
     info = load_json(os.path.join(path, filename + ".json"))
 
     return Level(path, filename, info, completed)

@@ -1,27 +1,20 @@
 import socket
 import threading
 
-import pygame
-
 from main import MainWindow
 from screens.abstract_screen import Screen
-from screens.changescreen import change_screen
-from screens.level_select_screen import LevelSelectScreen
-from screens.multiplayer_level_select_screen import MultiplayerLevelSelectScreen
-from screens.options_screen import OptionsScreen
-from ui.button import Button
+from screens.change_screen import change_screen
+from screens.mulitiplayer.multiplayer_level_select_screen import MultiplayerLevelSelectScreen
 from ui.text import draw_text
 
 
 def server(ip, port):
     sock = socket.socket()
-    sock.bind(('192.168.0.5', 9090))
+    sock.bind(('localhost', 9090))
     sock.listen(2)
     conn1, addr1 = sock.accept()
-    print(conn1, addr1)
 
     conn2, addr2 = sock.accept()
-    print(conn2, addr2)
 
     while True:
         data = conn1.recv(1024)
@@ -44,7 +37,7 @@ class WaitClientScreen(Screen):
         self.thread.start()
 
         self.sock = socket.socket()
-        self.sock.connect(('192.168.0.5', 9090))
+        self.sock.connect(('localhost', 9090))
 
         draw_text(self.layers["gui"][0], (0, 20), "Ожидание подключения", 30, "white", centered=True)
 

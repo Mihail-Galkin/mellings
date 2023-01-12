@@ -6,7 +6,10 @@ from screens.game_screen import GameScreen
 
 
 class Particle(pygame.sprite.Sprite):
-    def __init__(self, screen: GameScreen, sprite, pos, dx, dy):
+    """
+    Класс создает спрайт случайного размера и обрабатывает его физику
+    """
+    def __init__(self, screen: GameScreen, sprite: pygame.Surface, pos: tuple[int, int], dx: int, dy: int):
         super().__init__(screen.game_sprites)
         sprites = []
         for scale in (1, 2, 5):
@@ -27,7 +30,7 @@ class Particle(pygame.sprite.Sprite):
 
         self.pos = list(pos)
 
-    def update(self):
+    def update(self) -> None:
         self.rect.x, self.rect.y = self.pos
         self.velocity[1] += self.gravity / self.game.fps
 
@@ -37,7 +40,8 @@ class Particle(pygame.sprite.Sprite):
             self.kill()
 
 
-def create_particles(screen: GameScreen, sprite, position, particle_count: int = 20) -> None:
+def create_particles(screen: GameScreen, sprite: pygame.Surface,
+                     position: tuple[int, int], particle_count: int = 20) -> None:
     numbers = list(range(-100, 101))
     numbers.remove(0)
     for _ in range(particle_count):

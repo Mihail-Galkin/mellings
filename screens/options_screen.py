@@ -3,7 +3,7 @@ import pygame
 from main import MainWindow
 
 from screens.abstract_screen import Screen
-from screens.changescreen import change_screen
+from screens.change_screen import change_screen
 
 from ui.button import Button
 from ui.text import draw_text

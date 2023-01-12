@@ -14,4 +14,4 @@ class Blocker(StaticCharacter):
         self.screen.blockers.add(self)
 
     def custom_update(self):
-        pass  # nado
+        pass

@@ -4,7 +4,7 @@ from pygame.surface import Surface
 
 from level import Level
 from screens.abstract_screen import Screen
-from screens.changescreen import change_screen
+from screens.change_screen import change_screen
 from screens.game_screen import GameScreen
 from ui.text import draw_text
 

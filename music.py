@@ -8,6 +8,9 @@ from main import MainWindow
 
 
 class MusicManager:
+    """
+    Класс, реализуующий фоновую музыку
+    """
     def __init__(self, game: MainWindow, playlist_path: str):
         self.MUSIC_END = pygame.USEREVENT + 1
         pygame.mixer.music.set_endevent(self.MUSIC_END)
@@ -24,10 +27,16 @@ class MusicManager:
         self.current_volume = game.config.getfloat("GENERAL", "volume")
         pygame.mixer.music.set_volume(self.current_volume)
 
-    def load_music(self):
+    def load_music(self) -> None:
+        """
+        Добавление случайного трека в очередь
+        """
         pygame.mixer.music.queue(random.choice(self.playlist))
 
-    def add_volume(self, d):
+    def add_volume(self, d: int):
+        """
+        Добавление громкости
+        """
         self.current_volume += d
         if self.current_volume > 1:
             self.current_volume = 1

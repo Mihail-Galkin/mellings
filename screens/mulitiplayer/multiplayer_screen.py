@@ -2,12 +2,10 @@ import pygame
 
 from main import MainWindow
 from screens.abstract_screen import Screen
-from screens.changescreen import change_screen
-from screens.level_select_screen import LevelSelectScreen
+from screens.change_screen import change_screen
 
-from screens.options_screen import OptionsScreen
-from screens.wait_client_screen import WaitClientScreen
-from screens.wait_host_screen import WaitHostScreen
+from screens.mulitiplayer.wait_client_screen import WaitClientScreen
+from screens.mulitiplayer.wait_host_screen import WaitHostScreen
 from ui.button import Button
 from ui.text import draw_text
 

@@ -5,7 +5,6 @@ from vector import Vector
 
 
 class Floater(MovableCharacter):
-    max_fall_velocity = 10 ** 5
 
     def __init__(self, *args, **kwargs):
         self.walk_animation = Animation(load_image("walk.png"), (9, 1))
@@ -14,6 +13,7 @@ class Floater(MovableCharacter):
         self.animations = (self.walk_animation, self.float_animation)
 
         super().__init__(*args, **kwargs)
+        self.max_fall_velocity = 10 ** 5
 
     def custom_update(self):
         if self.on_ground:

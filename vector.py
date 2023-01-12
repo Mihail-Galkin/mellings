@@ -1,8 +1,9 @@
 import copy
 import typing
-from typing import Iterable
+from functools import total_ordering
 
 
+@total_ordering
 class Vector:
     def __init__(self, x, y):
         self.x = x

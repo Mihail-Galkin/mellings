@@ -5,7 +5,7 @@ from characters.default import DefaultCharacter
 def change_character(old: StaticCharacter, new: type[StaticCharacter], time):
     new = new(old.screen, old.position, size=old.screen.size_multiplier)
 
-    if isinstance(new, MovableCharacter):
+    if isinstance(new, MovableCharacter) and isinstance(old, MovableCharacter):
         new.move_direction = old.move_direction
 
     old.ground_checker.kill()

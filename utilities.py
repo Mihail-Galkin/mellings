@@ -1,12 +1,10 @@
 import os
-import random
 import sys
-from math import sqrt
 
 import pygame
 
 
-def load_image(name, colorkey=None, path="data"):
+def load_image(name: str, colorkey=None, path: str="data") -> pygame.Surface:
     fullname = os.path.join(path, name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
@@ -22,8 +20,10 @@ def load_image(name, colorkey=None, path="data"):
     return image
 
 
-def tile_texture(texture, size):
-    # Равномерно заполняет поверхность текстурой
+def tile_texture(texture: pygame.Surface, size: tuple[int, int]) -> pygame.Surface:
+    """
+    Функция равномерно заполняет поверхность заданного размера текстурой
+    """
     result = pygame.Surface(size, depth=32)
     for x in range(0, size[0], texture.get_width()):
         for y in range(0, size[1], texture.get_height()):
@@ -43,7 +43,7 @@ def stamp(image, texture, mask):
     image.blit(apply_alpha(texture, mask), (0, 0))
 
 
-def cut_sheet(sheet, columns, rows):
+def cut_sheet(sheet: pygame.Surface, columns: int, rows: int) -> list[pygame.Surface]:
     frames = []
     rect = pygame.Rect(0, 0, sheet.get_width() // columns, sheet.get_height() // rows)
     for j in range(rows):

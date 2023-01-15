@@ -10,6 +10,9 @@ from utilities import load_image
 
 
 class LemmingButton(pygame.sprite.Sprite):
+    """
+    Кнопка выбора персонажа. По работе схожа с radiocheckbox
+    """
     def __init__(self, screen: Screen, texture: str, lemming_class: type,
                  position: tuple[int, int], listener: Callable[[MainWindow, int], None], count: int, arg=None):
         super().__init__(screen.gui_sprites)

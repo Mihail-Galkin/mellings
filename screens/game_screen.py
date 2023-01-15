@@ -41,13 +41,15 @@ class GameScreen(Screen):
                            hover_texture="hover.png", args=[self.game, MainMenuScreen(self.game)])
 
         self.grid = self.level.get_grid()
+
+        # слой с игрой - это grid surface + персонажи
         self.layers["game"] = (copy.copy(self.grid.get_surface()), (0, 0))
 
         self.players = {}
 
         self.grid.update_collider()
 
-        self.current_button = None
+        self.current_button = None  # выбранная кнопка персонажей
         self.draw_buttons()
 
         self.size_multiplier = 1
@@ -58,6 +60,7 @@ class GameScreen(Screen):
         self.spawn_count = self.level.count
         self.characters_complete = 0
 
+        # Установка спрайтов начала и конца
         self.spawn_sprite = pygame.sprite.Sprite(self.game_sprites)
         self.spawn_sprite.image = load_image("spawn.png")
         self.spawn_sprite.rect = self.spawn_sprite.image.get_rect()
@@ -67,7 +70,8 @@ class GameScreen(Screen):
         self.end_sprite = pygame.sprite.Sprite(self.game_sprites)
         self.end_sprite.image = load_image("exit.png")
         self.end_sprite.rect = self.spawn_sprite.image.get_rect()
-        self.end_sprite.rect.midbottom = self.level.end[0] * self.grid.cell_size, self.level.end[1] * self.grid.cell_size
+        self.end_sprite.rect.midbottom = self.level.end[0] * self.grid.cell_size, self.level.end[
+            1] * self.grid.cell_size
 
         self.spawn_default_size = self.spawn_sprite.rect.width, self.spawn_sprite.rect.height
         self.end_default_size = self.end_sprite.rect.width, self.end_sprite.rect.height
@@ -75,7 +79,9 @@ class GameScreen(Screen):
     def update(self):
         from screens.mulitiplayer.multiplayer_game_screen import MultiplayerGameScreen
         if not self.spawn_count and self.players == {} and not isinstance(self, MultiplayerGameScreen):
+            # Конец игры
             if self.level.complete_count <= self.characters_complete:
+                # Изменение информации о том, пройден ли уровень
                 with open(os.path.join(LEVELS_FOLDER, "levels.csv"), encoding="utf8") as csvfile:
                     reader = list(csv.reader(csvfile, delimiter=',', quotechar='"'))[1:]
                 for i in range(len(reader)):
@@ -91,6 +97,7 @@ class GameScreen(Screen):
         self.layers["gui"] = (pygame.Surface(self.game.size, pygame.SRCALPHA, 32).convert_alpha(), (0, 0))
         self.layers["game"] = (copy.copy(self.grid.get_surface()), self.layers["game"][1])
 
+        # Спавн игроков
         self.current_cooldown += 1 / self.game.fps
         if self.current_cooldown >= self.spawn_cooldown and self.spawn_count:
             self.current_cooldown = 0
@@ -99,6 +106,7 @@ class GameScreen(Screen):
                 self.level.spawn[0] * self.grid.cell_size, self.level.spawn[1] * self.grid.cell_size),
                                           size=self.size_multiplier)] = -1
 
+        # Уменьшение кулдауна персонажей
         for i in self.players:
             if self.players[i] == -1:
                 continue
@@ -107,6 +115,7 @@ class GameScreen(Screen):
             else:
                 self.players[i] -= 1 / self.game.fps
 
+        # Движение камеры
         delta = [0, 0]
         keys = pygame.key.get_pressed()
         if keys[pygame.K_DOWN]:
@@ -127,10 +136,13 @@ class GameScreen(Screen):
                 self.players.pop(i)
             if i.rect.collidepoint(pygame.mouse.get_pos()[0] - self.layers["game"][1][0],
                                    pygame.mouse.get_pos()[1] - self.layers["game"][1][1]):
-                pygame.draw.rect(self.layers["game"][0], "yellow", i.rect, 3)
+                pygame.draw.rect(self.layers["game"][0], "yellow", i.rect, 3)  # отметка при наведении на персонажа
 
-                if isinstance(i, DefaultCharacter) and self.current_button and pygame.mouse.get_pressed()[0] and self.current_button.count > 0:
-                    change_character(i, self.current_button.lemming_class, -1 if self.current_button.lemming_class == Blocker else 10)
+                # Изменение типа персонажа нажатием
+                if (isinstance(i, DefaultCharacter) and self.current_button and pygame.mouse.get_pressed()[0]
+                        and self.current_button.count > 0):
+                    change_character(i, self.current_button.lemming_class,
+                                     -1 if self.current_button.lemming_class == Blocker else 10)
                     self.current_button.count -= 1
                 break
 
@@ -148,6 +160,7 @@ class GameScreen(Screen):
     def event(self, events: list[pygame.event.Event]):
         for event in events:
             if event.type == pygame.MOUSEWHEEL:
+                # одификация масштаба
                 if event.y == 1:
                     m = 2
                 else:
@@ -159,6 +172,7 @@ class GameScreen(Screen):
                         i.resize((i.rect.width * m, i.rect.height * m))
                 self.grid.set_cell_size(int(self.grid.cell_size * m))
 
+                # Изменение позиции начала и конца
                 self.spawn_sprite.image = pygame.transform.scale(self.spawn_sprite.image,
                                                                  (self.spawn_default_size[0] * self.size_multiplier,
                                                                   self.spawn_default_size[1] * self.size_multiplier))
@@ -168,12 +182,13 @@ class GameScreen(Screen):
                 self.spawn_sprite.rect = self.spawn_sprite.image.get_rect()
                 self.end_sprite.rect = self.end_sprite.image.get_rect()
 
-                self.spawn_sprite.rect.midbottom = self.level.spawn[0] * self.grid.cell_size, self.level.spawn[
-                    1] * self.grid.cell_size
-                self.end_sprite.rect.midbottom = self.level.end[0] * self.grid.cell_size, self.level.end[
-                    1] * self.grid.cell_size
+                self.spawn_sprite.rect.midbottom = (self.level.spawn[0] * self.grid.cell_size,
+                                                    self.level.spawn[1] * self.grid.cell_size)
+                self.end_sprite.rect.midbottom = (self.level.end[0] * self.grid.cell_size,
+                                                  self.level.end[1] * self.grid.cell_size)
 
     def draw_buttons(self):
+        # Добавление кнопок персонажей
         buttons_title = ["basher", "blocker", "bomber", "builder", "climber", "digger", "floater", "miner"]
         buttons_class = [Basher, Blocker, Bomber, Builder, Climber, Digger, Floater, Miner]
         self.buttons = [
@@ -184,6 +199,7 @@ class GameScreen(Screen):
                                   lambda: [change_character(i, Bomber, -1) for i in self.players_group.sprites()])
 
     def change_selected(self, game: MainWindow, index: int):
+        # Изменение нажатой кнопки
         b = self.buttons[index].activated
         for i in self.buttons:
             i.set_activated(False)
@@ -194,6 +210,7 @@ class GameScreen(Screen):
             self.current_button = None
 
     def is_collide(self, sprite):
+        # Проверка пересекатеся ли данный спрайт с grid collider или blocker
         collider = self.grid.get_collider()
         return bool(pygame.sprite.collide_mask(sprite, collider) or pygame.sprite.spritecollide(sprite, self.blockers,
                                                                                                 dokill=False))

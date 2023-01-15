@@ -18,6 +18,9 @@ def close(game: MainWindow):
 
 
 class MainMenuScreen(Screen):
+    """
+    Главное меню. Реализовано: вход в настройки, одиночую игру, многопользовательскую игру, выход
+    """
     def __init__(self, game: MainWindow):
         super().__init__(game)
 

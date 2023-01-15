@@ -19,6 +19,10 @@ LEVELS_FOLDER = "level"
 
 
 class LevelSelectScreen(Screen):
+    """
+    Окно выбора уровня. Если уровни не помещаюьтся на экран, используются стрелочки для перелистывания
+    """
+
     def __init__(self, game: MainWindow):
         super().__init__(game)
         self.current_page = 0
@@ -37,10 +41,9 @@ class LevelSelectScreen(Screen):
             for row in reader:
                 levels.append(load_level(LEVELS_FOLDER, row[0], completed=bool(row[1] == "1")))
 
-
         levels.sort(key=lambda level: level.title)
         on_page = self.game.size[0] // 105
-        self.pages = [levels[i:i + on_page] for i in range(0, len(levels), on_page)]
+        self.pages = [levels[i:i + on_page] for i in range(0, len(levels), on_page)]  # двумерный массив с уровнями
         self.max_page = len(self.pages)
 
         self.update_page()
@@ -53,7 +56,8 @@ class LevelSelectScreen(Screen):
         indent = (self.game.size[0] - on_page * 100 - (on_page - 1) * 5) // 2
         for i in range(len(self.pages[self.current_page])):
             self.widgets_on_page.append(
-                LevelWidget(self, self.pages[self.current_page][i], (100, 100), 5, text_size=20, color=(173, 216, 230), completed=self.pages[self.current_page][i].completed))
+                LevelWidget(self, self.pages[self.current_page][i], (100, 100), 5, text_size=20, color=(173, 216, 230),
+                            completed=self.pages[self.current_page][i].completed))
             self.widgets_on_page[-1].rect.x = 105 * i + indent
             self.widgets_on_page[-1].rect.y = 100
 

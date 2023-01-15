@@ -1,15 +1,15 @@
 import pygame
-from pygame.sprite import Sprite, AbstractGroup
+from pygame.sprite import Sprite
 from pygame.surface import Surface
 
 from level import Level
 from screens.abstract_screen import Screen
-from screens.change_screen import change_screen
-from screens.game_screen import GameScreen
-from ui.text import draw_text
 
 
 class LevelWidget(Sprite):
+    """
+    Виджет выбора уровня
+    """
     def __init__(self, screen: Screen, level: Level, size: tuple[int, int], indent: int,
                  color: tuple[int, int, int] = (100, 100, 100), text_size: int = 5, completed: bool = False):
         super().__init__(screen.gui_sprites)

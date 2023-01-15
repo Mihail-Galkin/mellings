@@ -8,6 +8,9 @@ from utilities import load_image
 
 
 class Button(pygame.sprite.Sprite):
+    """
+    Класс, реализующий работу кнопки. При нажатии запускается переданная функция с переданными аргументами
+    """
     def __init__(self, screen: Screen, texture: str,
                  position: tuple[int, int], listener: Callable[[...], None],
                  size: tuple[int, int] = None, text: str = "", text_color="dimgray",

@@ -10,6 +10,9 @@ from ui.text import draw_text
 
 
 class OptionsScreen(Screen):
+    """
+    Окно настройки. Реализовано изменение громкости фоновой музыки
+    """
     def __init__(self, game: MainWindow):
         super().__init__(game)
 

@@ -1,7 +1,7 @@
 import pygame
 
 
-def draw_text(surface: pygame.Surface, position: tuple[int, int], text: str, size: int, color, centered=False):
+def draw_text(surface: pygame.Surface, position: tuple[int, int], text: str, size: int, color, centered: bool = False):
     font = pygame.font.Font("data\\pixelfont_7.ttf", size)
     text = font.render(text, True, color)
     if centered:

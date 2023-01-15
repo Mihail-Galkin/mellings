@@ -9,7 +9,7 @@ from ui.text import draw_text
 
 
 class EndScreen(Screen):
-    def __init__(self, game: MainWindow, characters_completed, characters, characters_need):
+    def __init__(self, game: MainWindow, characters_completed: int, characters: int, characters_need: int):
         super().__init__(game)
         self.characters_completed = characters_completed
         self.characters = characters

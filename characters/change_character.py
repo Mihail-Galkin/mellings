@@ -1,8 +1,6 @@
-from characters.abstract_characters import StaticCharacter, MovableCharacter
-from characters.default import DefaultCharacter
 
-
-def change_character(old: StaticCharacter, new: type[StaticCharacter], time):
+def change_character(old, new: type, time):
+    from characters.abstract_characters import MovableCharacter
     new = new(old.screen, old.position, size=old.screen.size_multiplier)
 
     if isinstance(new, MovableCharacter) and isinstance(old, MovableCharacter):
@@ -14,5 +12,3 @@ def change_character(old: StaticCharacter, new: type[StaticCharacter], time):
     old.kill()
     old.screen.players[new] = time
     old.screen.players.pop(old)
-
-

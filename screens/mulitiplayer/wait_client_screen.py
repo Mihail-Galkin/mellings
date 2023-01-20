@@ -10,7 +10,7 @@ from ui.text import draw_text
 
 def server(ip, port):
     sock = socket.socket()
-    sock.bind(('localhost', 9090))
+    sock.bind((ip, port))
     sock.listen(2)
     conn1, addr1 = sock.accept()
 
@@ -33,11 +33,11 @@ class WaitClientScreen(Screen):
         super().__init__(game)
 
     def start(self):
-        self.thread = threading.Thread(target=server, daemon=True, args=(1, 2))
+        self.thread = threading.Thread(target=server, daemon=True, args=(self.game.ip, self.game.port))
         self.thread.start()
 
         self.sock = socket.socket()
-        self.sock.connect(('localhost', 9090))
+        self.sock.connect(('localhost', self.game.port))
 
         draw_text(self.layers["gui"][0], (0, 20), "Ожидание подключения", 30, "white", centered=True)
 

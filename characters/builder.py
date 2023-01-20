@@ -40,7 +40,11 @@ class Builder(MovableCharacter):
             change_character(self, DefaultCharacter, -1)
 
     def build(self, direction):
-        pos = self.rect.x + self.rect.width + self.platform_size, self.rect.height + self.rect.y
+        if direction == 1:
+            pos = self.rect.bottomright
+        else:
+            pos = self.rect.bottomleft
+        pos = pos[0] + direction * (self.platform_size - 1) * self.screen.grid.cell_size, pos[1]
         pos = list(map(int, self.screen.grid.local_coord(pos)))
 
         for i in range(self.platform_size):

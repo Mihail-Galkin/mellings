@@ -18,11 +18,12 @@ from characters.miner import Miner
 
 from level import Level
 from main import MainWindow
+from melling_changer import MellingChanger
 from screens.abstract_screen import Screen
 from screens.change_screen import change_screen
 from screens.end_screen import EndScreen
 from ui.button import Button
-from ui.lemming_button import LemmingButton
+from ui.melling_button import LemmingButton
 from utilities import load_image
 
 LEVELS_FOLDER = "level"
@@ -46,6 +47,7 @@ class GameScreen(Screen):
         self.layers["game"] = (copy.copy(self.grid.get_surface()), (0, 0))
 
         self.players = {}
+        self.melling_changers = []
 
         self.grid.update_collider()
 
@@ -64,14 +66,14 @@ class GameScreen(Screen):
         self.spawn_sprite = pygame.sprite.Sprite(self.game_sprites)
         self.spawn_sprite.image = load_image("spawn.png")
         self.spawn_sprite.rect = self.spawn_sprite.image.get_rect()
-        self.spawn_sprite.rect.midbottom = self.level.spawn[0] * self.grid.cell_size, self.level.spawn[
-            1] * self.grid.cell_size
+        self.spawn_sprite.rect.midbottom = (self.level.spawn[0] * self.grid.cell_size,
+                                            self.level.spawn[1] * self.grid.cell_size)
 
         self.end_sprite = pygame.sprite.Sprite(self.game_sprites)
         self.end_sprite.image = load_image("exit.png")
         self.end_sprite.rect = self.spawn_sprite.image.get_rect()
-        self.end_sprite.rect.midbottom = self.level.end[0] * self.grid.cell_size, self.level.end[
-            1] * self.grid.cell_size
+        self.end_sprite.rect.midbottom = (self.level.end[0] * self.grid.cell_size,
+                                          self.level.end[1] * self.grid.cell_size)
 
         self.spawn_default_size = self.spawn_sprite.rect.width, self.spawn_sprite.rect.height
         self.end_default_size = self.end_sprite.rect.width, self.end_sprite.rect.height
@@ -107,13 +109,16 @@ class GameScreen(Screen):
                                           size=self.size_multiplier)] = -1
 
         # Уменьшение кулдауна персонажей
+        to_change = []
         for i in self.players:
             if self.players[i] == -1:
                 continue
             elif -1 < self.players[i] < 0:
-                change_character(i, DefaultCharacter, -1)
+                to_change.append(i)
             else:
                 self.players[i] -= 1 / self.game.fps
+        for i in to_change:
+            change_character(i, DefaultCharacter, -1)
 
         # Движение камеры
         delta = [0, 0]
@@ -126,25 +131,14 @@ class GameScreen(Screen):
             delta[0] += 1
         if keys[pygame.K_RIGHT]:
             delta[0] -= 1
-        self.layers["game"] = (
-            self.layers["game"][0], (self.layers["game"][1][0] + delta[0], self.layers["game"][1][1] + delta[1]))
+        self.layers["game"] = (self.layers["game"][0],
+                               (self.layers["game"][1][0] + delta[0], self.layers["game"][1][1] + delta[1]))
 
         for i in self.players_group.sprites():
             if i.rect.collidepoint(self.level.end[0] * self.grid.cell_size, self.level.end[1] * self.grid.cell_size):
                 self.characters_complete += 1
                 i.kill()
                 self.players.pop(i)
-            if i.rect.collidepoint(pygame.mouse.get_pos()[0] - self.layers["game"][1][0],
-                                   pygame.mouse.get_pos()[1] - self.layers["game"][1][1]):
-                pygame.draw.rect(self.layers["game"][0], "yellow", i.rect, 3)  # отметка при наведении на персонажа
-
-                # Изменение типа персонажа нажатием
-                if (isinstance(i, DefaultCharacter) and self.current_button and pygame.mouse.get_pressed()[0]
-                        and self.current_button.count > 0):
-                    change_character(i, self.current_button.lemming_class,
-                                     -1 if self.current_button.lemming_class == Blocker else 10)
-                    self.current_button.count -= 1
-                break
 
         self.gui_sprites.draw(self.layers["gui"][0])
         self.game_sprites.draw(self.layers["game"][0])
@@ -160,16 +154,27 @@ class GameScreen(Screen):
     def event(self, events: list[pygame.event.Event]):
         for event in events:
             if event.type == pygame.MOUSEWHEEL:
-                # одификация масштаба
+                # Модификация масштаба
                 if event.y == 1:
                     m = 2
+                    if self.size_multiplier == 4:
+                        return
                 else:
                     m = 0.5
+                    if self.size_multiplier == 1:
+                        return
                 self.size_multiplier *= m
 
                 for i in self.game_sprites.sprites():
                     if isinstance(i, StaticCharacter):
                         i.resize((i.rect.width * m, i.rect.height * m))
+                    elif i is not self.spawn_sprite and i is not  self.end_sprite:
+                        i.rect.x = int(i.rect.x * m)
+                        i.rect.y = int(i.rect.y * m)
+                        i.rect.width = int(i.rect.width * m)
+                        i.rect.height = int(i.rect.height * m)
+                        i.image = pygame.transform.scale(i.image, i.rect.size)
+
                 self.grid.set_cell_size(int(self.grid.cell_size * m))
 
                 # Изменение позиции начала и конца
@@ -186,6 +191,12 @@ class GameScreen(Screen):
                                                     self.level.spawn[1] * self.grid.cell_size)
                 self.end_sprite.rect.midbottom = (self.level.end[0] * self.grid.cell_size,
                                                   self.level.end[1] * self.grid.cell_size)
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.current_button and self.current_button.count >= 1:
+                changer = MellingChanger(self, self.current_button.changer_img, self.current_button.melling_class, m=self.size_multiplier)
+                changer.rect.center = (pygame.mouse.get_pos()[0] - self.layers["game"][1][0],
+                                       pygame.mouse.get_pos()[1] - self.layers["game"][1][1])
+                self.melling_changers.append(changer)
+                self.current_button.count -= 1
 
     def draw_buttons(self):
         # Добавление кнопок персонажей

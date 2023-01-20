@@ -1,9 +1,11 @@
+import sys
 from configparser import ConfigParser
+from datetime import datetime
 
 import pygame
 
+from discord import setup_rpc
 from game import Window
-from icecream import install
 
 from utilities import load_image
 
@@ -22,6 +24,11 @@ class MainWindow(Window):
         super().__init__(title, size)
 
     def start(self):
+        # Переопределение выходного потока
+        sys.stdout = open(fr"logs\{datetime.now().strftime('%Y-%m-%d %H-%M-%S')}.txt", "w", encoding="utf-8")
+
+        self.rpc = setup_rpc()
+
         # Создание фона игры и увеличение до размером окна
         background = load_image("background.png")
         multiple = max(self.surface.get_width() / background.get_width(),
@@ -32,6 +39,9 @@ class MainWindow(Window):
         # Настройки игры сохраняются в файл
         self.config = ConfigParser()
         self.config.read("options.ini")
+
+        self.ip = self.config.get("MULTIPLAYER", "ip")
+        self.port = self.config.getint("MULTIPLAYER", "port")
 
         # Фоновая музыка реализуется классом MusicManager. Импорт находится здесь для избежания circular import
         from music import MusicManager
@@ -62,5 +72,5 @@ class MainWindow(Window):
 
 
 if __name__ == "__main__":
-    install()
     main = MainWindow("123", (960, 540))
+

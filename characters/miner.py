@@ -12,8 +12,8 @@ class Miner(MovableCharacter):
 
         super().__init__(*args, **kwargs)
 
-        self.current_cooldown = 5
-        self.cooldown = 5
+        self.current_cooldown = 3
+        self.cooldown = 3
 
         self.radius = 7
 

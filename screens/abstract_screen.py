@@ -8,12 +8,10 @@ from main import MainWindow
 class Screen(ABC):
     def __init__(self, game: MainWindow):
         self.players_group = pygame.sprite.Group()
-        self.all_sprites = pygame.sprite.Group()
-        self.buttons_group = pygame.sprite.Group()
-        self.camera_movable = pygame.sprite.Group()
         self.gui_sprites = pygame.sprite.Group()
         self.blockers = pygame.sprite.Group()
         self.game_sprites = pygame.sprite.Group()
+        self.melling_changers_group = pygame.sprite.Group()
 
         self.game = game
 

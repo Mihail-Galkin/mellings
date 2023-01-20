@@ -24,7 +24,7 @@ class Climber(MovableCharacter):
 
     def custom_update(self):
         if self.is_climbing:
-            self.add_velocity("climb", Vector(0, -self.climb_speed))
+            self.velocities["climb"] = Vector(0, -self.climb_speed)
 
             self.velocities["g"] = Vector(0, 0)
             self.velocities["walk"] = Vector(0, 0)
@@ -37,7 +37,7 @@ class Climber(MovableCharacter):
                 self.is_climbing = False
 
                 if not self.screen.is_collide(self.wall_checker[0]):
-                    self.rect.x += 1
+                    self.rect.x += self.move_direction
                     self.position[0] = self.rect.x
                 if self.screen.is_collide(self.wall_checker[1]):
                     self.move_direction *= -1
@@ -66,7 +66,7 @@ class Climber(MovableCharacter):
             self.rect.x, self.rect.y = self.position
         else:
             self.is_climbing = True
-            self.add_velocity("climb", Vector(0, -self.climb_speed))
+            self.velocities["climb"] = Vector(0, -self.climb_speed)
             self.velocities["walk"] = Vector(0, 0)
 
             self.velocities["g"] = Vector(0, 0)
@@ -81,5 +81,4 @@ class Climber(MovableCharacter):
             else:
                 self.wall_checker = (BoxCollider(self.rect.x - 1, self.rect.y, 1, self.rect.height),
                                      BoxCollider(self.rect.x, self.rect.y, self.rect.width, self.rect.height))
-            self.screen.camera_movable.add(self.wall_checker)
             self.current_animation = self.climb_animation

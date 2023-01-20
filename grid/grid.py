@@ -78,20 +78,6 @@ class Grid:
             item.render(self.mask[item.texture])
         self.board[int(x), int(y)] = item
 
-    def get_cell(self, mouse_pos: tuple):
-        if not (self.left <= mouse_pos[0] <= self.left + self.width * self.cell_size and
-                self.top <= mouse_pos[1] <= self.top + self.height * self.cell_size):
-            return None
-        return (mouse_pos[0] - self.left) // self.cell_size, (mouse_pos[1] - self.top) // self.cell_size
-
-    def get_click(self, mouse_pos: tuple):
-        cell = self.get_cell(mouse_pos)
-        self.on_click(cell)
-
-    def on_click(self, cell_coord: tuple):
-        if cell_coord is not None:
-            # self.board[cell_coord] = Dirt(self, cell_coord)
-            pass
 
     def get_collider(self):
         return self.collider
@@ -105,7 +91,7 @@ class Grid:
 
 
 def draw_circle(grid, position, radius, material):
-    new = copy.copy(position)
+    new = copy.deepcopy(position)
     for i in range(-radius, radius + 1):
         for j in range(-radius, radius + 1):
             if i ** 2 + j ** 2 <= radius ** 2:

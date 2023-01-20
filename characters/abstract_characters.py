@@ -3,6 +3,7 @@ import pygame
 
 import utilities
 from animation import Animation
+from characters.change_character import change_character
 from colliders import BoxCollider
 from screens.abstract_screen import Screen
 
@@ -36,16 +37,14 @@ class StaticCharacter(pygame.sprite.Sprite):
         self.on_ground = False
 
         self.ground_checker = BoxCollider(self.position[0], self.position[1] + 1, self.rect.width, 1)
-        screen.all_sprites.add(self.ground_checker)
-        screen.camera_movable.add(self.ground_checker)
 
         self.mask_surface = pygame.Surface((self.rect.width, self.rect.height))
         self.mask_surface.fill("black")
         self.mask = pygame.mask.from_surface(self.mask_surface)
 
-    def update(self):
         self.rect.x, self.rect.y = self.position
 
+    def update(self):
         self.ground_check()
         self.custom_update()
         self.animation_update()
@@ -101,17 +100,28 @@ class MovableCharacter(StaticCharacter):
         self.forces = {"g": Vector(0, self.mass * self.g)}
 
         self.rect.x, self.rect.y = self.position
+        self.recently_spawned = True
 
     def custom_update(self):
         raise NotImplementedError()
 
     def update(self):
+        from characters.default import DefaultCharacter
+        from characters.blocker import Blocker
         self.ground_check()
         self.custom_update()
         self.collision_check()
 
         self.animation_update()
         self.current_animation.flipped = (self.move_direction == -1)
+
+        change = pygame.sprite.spritecollide(self, self.screen.melling_changers_group, dokill=False)
+        if change:
+            if isinstance(self, DefaultCharacter):
+                change_character(self, change[0].melling_class, 20 if change[0].melling_class != Blocker else -1)
+                change[0].kill()
+        if self.on_ground:
+            self.recently_spawned = False
 
     def move(self, delta: Vector):
         sign = math.copysign(1, delta.x)
@@ -147,8 +157,9 @@ class MovableCharacter(StaticCharacter):
 
     def collision_check(self):
         if self.on_ground:
-            if "g" in self.velocities.keys() and \
-                    self.velocities["g"].y > self.max_fall_velocity * self.screen.size_multiplier:
+            if ("g" in self.velocities.keys() and
+                    self.velocities["g"].y > self.max_fall_velocity and
+                    not self.recently_spawned):
                 self.kill()
                 self.ground_checker.kill()
                 self.screen.players.pop(self)
@@ -176,7 +187,6 @@ class MovableCharacter(StaticCharacter):
         else:
             wall_checker = (BoxCollider(self.rect.x - 1, self.rect.y, 1, self.rect.height),
                             BoxCollider(self.rect.x, self.rect.y, self.rect.width, self.rect.height))
-        self.screen.camera_movable.add(wall_checker)
         delta = 0
 
         while True:

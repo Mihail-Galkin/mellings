@@ -1,9 +1,7 @@
 import copy
 import typing
-from functools import total_ordering
 
 
-@total_ordering
 class Vector:
     def __init__(self, x, y):
         self.x = x
@@ -12,12 +10,12 @@ class Vector:
 
     def __add__(self, other):
         if isinstance(other, typing.Sequence):
-            new = copy.copy(other)
+            new = copy.deepcopy(other)
             new[0] += self.x
             new[1] += self.y
             return new
         if other == 0:
-            return copy.copy(self)
+            return copy.deepcopy(self)
         return Vector(self.x + other.x, self.y + other.y)
 
     def __radd__(self, other):

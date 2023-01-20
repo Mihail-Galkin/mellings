@@ -14,7 +14,7 @@ class WaitHostScreen(Screen):
 
     def start(self):
         self.sock = socket.socket()
-        self.sock.connect(('localhost', 9090))
+        self.sock.connect((self.game.ip, self.game.port))
 
         draw_text(self.layers["gui"][0], (0, 20), "Ожидание хоста", 30, "white", centered=True)
 
@@ -24,7 +24,6 @@ class WaitHostScreen(Screen):
         if s.startswith("level"):
             level = load_level("level", s.split()[1])
             change_screen(self.game, MultiplayerGameScreen(self.game, level, self.sock))
-
 
     def event(self, event):
         pass

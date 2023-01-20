@@ -9,6 +9,9 @@ from ui.text import draw_text
 
 
 class EndScreen(Screen):
+    """
+    Экран с результатами игры
+    """
     def __init__(self, game: MainWindow, characters_completed: int, characters: int, characters_need: int):
         super().__init__(game)
         self.characters_completed = characters_completed

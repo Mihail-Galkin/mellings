@@ -3,6 +3,7 @@ from typing import Callable
 import pygame
 
 from main import MainWindow
+from melling_changer import MellingChanger
 from screens.abstract_screen import Screen
 from ui.button import Button
 from ui.text import draw_text
@@ -11,20 +12,24 @@ from utilities import load_image
 
 class LemmingButton(pygame.sprite.Sprite):
     """
-    Кнопка выбора персонажа. По работе схожа с radiocheckbox
+    Кнопка выбора персонажа. По работе схожа с checkbox
     """
-    def __init__(self, screen: Screen, texture: str, lemming_class: type,
+    def __init__(self, screen: Screen, texture: str, melling_class: type,
                  position: tuple[int, int], listener: Callable[[MainWindow, int], None], count: int, arg=None):
         super().__init__(screen.gui_sprites)
 
         self.count = count
+
+        changer_texture = "changers\\" + texture.split("\\")[-1]
+        changer_texture = changer_texture[:-4] + ".png"
+        self.changer_img = load_image(changer_texture)
 
         self.default_image = load_image(texture)
         self.activated_image = load_image(f"{texture[:-4]}_activated.jpg")
 
         self.activated = False
         self.clicked = False
-        self.lemming_class = lemming_class
+        self.melling_class = melling_class
 
         self.image = self.default_image
         self.rect = self.image.get_rect()

@@ -168,7 +168,7 @@ class GameScreen(Screen):
                 for i in self.game_sprites.sprites():
                     if isinstance(i, StaticCharacter):
                         i.resize((i.rect.width * m, i.rect.height * m))
-                    elif i is not self.spawn_sprite and i is not  self.end_sprite:
+                    elif i is not self.spawn_sprite and i is not self.end_sprite:
                         i.rect.x = int(i.rect.x * m)
                         i.rect.y = int(i.rect.y * m)
                         i.rect.width = int(i.rect.width * m)
@@ -192,7 +192,8 @@ class GameScreen(Screen):
                 self.end_sprite.rect.midbottom = (self.level.end[0] * self.grid.cell_size,
                                                   self.level.end[1] * self.grid.cell_size)
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.current_button and self.current_button.count >= 1:
-                changer = MellingChanger(self, self.current_button.changer_img, self.current_button.melling_class, m=self.size_multiplier)
+                changer = MellingChanger(self, self.current_button.changer_img, self.current_button.melling_class,
+                                         m=self.size_multiplier)
                 changer.rect.center = (pygame.mouse.get_pos()[0] - self.layers["game"][1][0],
                                        pygame.mouse.get_pos()[1] - self.layers["game"][1][1])
                 self.melling_changers.append(changer)

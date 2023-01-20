@@ -2,7 +2,6 @@ from typing import Callable
 
 import pygame
 
-from main import MainWindow
 from screens.abstract_screen import Screen
 from utilities import load_image
 
@@ -11,6 +10,7 @@ class Button(pygame.sprite.Sprite):
     """
     Класс, реализующий работу кнопки. При нажатии запускается переданная функция с переданными аргументами
     """
+
     def __init__(self, screen: Screen, texture: str,
                  position: tuple[int, int], listener: Callable[[...], None],
                  size: tuple[int, int] = None, text: str = "", text_color="dimgray",
@@ -73,5 +73,5 @@ class Button(pygame.sprite.Sprite):
         text_scale = (text.get_width(), text.get_height())
 
         self.screen.layers["gui"][0].blit(text,
-                                       (self.rect.x + (self.rect.width - text_scale[0]) // 2,
-                                        self.rect.y + (self.rect.height - text_scale[1]) // 2))
+                                          (self.rect.x + (self.rect.width - text_scale[0]) // 2,
+                                           self.rect.y + (self.rect.height - text_scale[1]) // 2))

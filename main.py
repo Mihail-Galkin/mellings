@@ -10,7 +10,7 @@ from game import Window
 from utilities import load_image
 
 
-def show_fps(screen, fps):
+def show_fps(fps):
     pygame.display.set_caption(f"Mellings (fps: {round(fps)})")
 
 
@@ -57,7 +57,7 @@ class MainWindow(Window):
         self.fps = self.clock.get_fps()
         if self.fps == 0:
             self.fps = 1
-        show_fps(self.surface, self.clock.get_fps())
+        show_fps(self.clock.get_fps())
 
     def event(self, events: list[pygame.event.Event]):
         for event in events:

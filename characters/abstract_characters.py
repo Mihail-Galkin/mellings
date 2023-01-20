@@ -1,7 +1,6 @@
 import math
 import pygame
 
-import utilities
 from animation import Animation
 from characters.change_character import change_character
 from colliders import BoxCollider
@@ -12,6 +11,9 @@ from vector import Vector
 
 
 class StaticCharacter(pygame.sprite.Sprite):
+    """
+    Класс персонажа, не имеющего физики
+    """
     current_animation = Animation(load_image("walk.png"), (9, 1))
     animations = (current_animation,)
 
@@ -86,6 +88,9 @@ class StaticCharacter(pygame.sprite.Sprite):
 
 
 class MovableCharacter(StaticCharacter):
+    """
+    Класс персонажа с физикой
+    """
     walk_speed = 40
     mass = 100
     jump_height = 5

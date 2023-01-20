@@ -3,9 +3,7 @@ from typing import Callable
 import pygame
 
 from main import MainWindow
-from melling_changer import MellingChanger
 from screens.abstract_screen import Screen
-from ui.button import Button
 from ui.text import draw_text
 from utilities import load_image
 

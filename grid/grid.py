@@ -1,4 +1,5 @@
 import copy
+from typing import Any
 
 import numpy as np
 import pygame
@@ -8,7 +9,10 @@ from colliders import MaskCollider
 
 
 class Grid:
-    def __init__(self, width, height):
+    """
+    Класс, реализующий игровое поле
+    """
+    def __init__(self, width: int, height: int):
         self.width = width
         self.height = height
         self.board = np.array([[None for _ in range(height)] for _ in range(width)])
@@ -17,20 +21,29 @@ class Grid:
         self.update_render()
         self.update_collider()
 
-    def set_cell_size(self, cell_size):
+    def set_cell_size(self, cell_size: int) -> None:
         self.cell_size = cell_size
         self.update_mask()
         self.update_render()
 
         self.update_collider()
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface) -> None:
+        """
+        Накладывает на данную поверхность поле
+        """
         screen.blit(self.rendered, (0, 0))
 
-    def get_surface(self):
+    def get_surface(self) -> pygame.Surface:
+        """
+        Возвращает текущий вид поля
+        """
         return copy.copy(self.rendered)
 
-    def update_render(self):
+    def update_render(self) -> None:
+        """
+        Обновляет текущий вид поля
+        """
         result = pygame.Surface((self.cell_size * self.width, self.cell_size * self.height), pygame.SRCALPHA, 32)
         result.convert_alpha()
 
@@ -41,16 +54,22 @@ class Grid:
                             mask[i])
         self.rendered = result
 
-    def local_coord(self, coord):
+    def local_coord(self, coord) -> tuple[int, int]:
         return coord[0] // self.cell_size, coord[1] // self.cell_size
 
-    def global_coord_without_indent(self, coord):
+    def global_coord_without_indent(self, coord) -> tuple[int, int]:
         return coord[0] * self.cell_size, coord[1] * self.cell_size
 
-    def get_mask(self):
+    def get_mask(self) -> dict[pygame.Surface, pygame.Surface]:
+        """
+        Возвращает маску, необходимую для рендера поля
+        """
         return self.mask
 
-    def update_mask(self):
+    def update_mask(self) -> None:
+        """
+        Обновляет маску
+        """
         masks = {}
         for i in range(self.width):
             for j in range(self.height):
@@ -62,7 +81,10 @@ class Grid:
                 self.board[i, j].render(masks[self.board[i, j].texture])
         self.mask = masks
 
-    def set_item(self, x: int, y: int, item):
+    def set_item(self, x: int, y: int, item) -> None:
+        """
+        Изменяет материал заданной ячейки
+        """
         x = int(x)
         y = int(y)
         if not (0 <= x < self.width and 0 <= y < self.height):
@@ -78,11 +100,10 @@ class Grid:
             item.render(self.mask[item.texture])
         self.board[int(x), int(y)] = item
 
-
-    def get_collider(self):
+    def get_collider(self) -> MaskCollider:
         return self.collider
 
-    def update_collider(self):
+    def update_collider(self) -> None:
         surface = pygame.Surface((self.cell_size * self.width, self.cell_size * self.height), pygame.SRCALPHA, 32)
         surface = surface.convert_alpha()
 
@@ -90,7 +111,7 @@ class Grid:
         self.collider = MaskCollider(surface)
 
 
-def draw_circle(grid, position, radius, material):
+def draw_circle(grid: Grid, position: tuple[int, int], radius: int, material) -> None:
     new = copy.deepcopy(position)
     for i in range(-radius, radius + 1):
         for j in range(-radius, radius + 1):

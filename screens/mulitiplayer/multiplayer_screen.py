@@ -28,7 +28,6 @@ class MultiplayerScreen(Screen):
         self.back = Button(self, "button.png", (20, 20), change_screen, size=(80, 30), text="Выйти",
                            hover_texture="hover.png", args=[self.game, MainMenuScreen(self.game)])
 
-
     def update(self):
         self.layers["gui"] = (pygame.Surface(self.game.size, pygame.SRCALPHA, 32).convert_alpha(), (0, 0))
         self.gui_sprites.draw(self.layers["gui"][0])

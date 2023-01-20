@@ -2,6 +2,9 @@ import pygame
 
 
 class MellingChanger(pygame.sprite.Sprite):
+    """
+    Спрайт для выбора профессии меллинга, хранящий в себе класс профессии
+    """
     def __init__(self, screen, image: pygame.Surface, melling_class, m=1):
         super().__init__(screen.game_sprites, screen.melling_changers_group)
         image_size = image.get_size()

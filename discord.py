@@ -4,7 +4,7 @@ import DiscordRPC
 from datetime import datetime
 
 
-def setup_rpc() -> None:
+def setup_rpc() -> DiscordRPC.presence.RPC:
     """
     Функция инициализирует discord rpc
     """

@@ -1,7 +1,5 @@
 import csv
 import os
-from os import listdir
-from os.path import isfile, join
 
 import pygame.event
 
@@ -10,7 +8,6 @@ from main import MainWindow
 from screens.abstract_screen import Screen
 from screens.change_screen import change_screen
 from screens.game_screen import GameScreen
-
 from ui.button import Button
 from ui.level_widget import LevelWidget
 from ui.text import draw_text

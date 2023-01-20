@@ -4,7 +4,7 @@ import sys
 import pygame
 
 
-def load_image(name: str, colorkey=None, path: str="data") -> pygame.Surface:
+def load_image(name: str, colorkey=None, path: str = "data") -> pygame.Surface:
     fullname = os.path.join(path, name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
@@ -51,5 +51,3 @@ def cut_sheet(sheet: pygame.Surface, columns: int, rows: int) -> list[pygame.Sur
             frame_location = (rect.w * i, rect.h * j)
             frames.append(sheet.subsurface(pygame.Rect(frame_location, rect.size)))
     return frames
-
-

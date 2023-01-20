@@ -1,7 +1,6 @@
 from animation import Animation
 from characters.abstract_characters import MovableCharacter
 from utilities import load_image
-from vector import Vector
 
 
 class Floater(MovableCharacter):

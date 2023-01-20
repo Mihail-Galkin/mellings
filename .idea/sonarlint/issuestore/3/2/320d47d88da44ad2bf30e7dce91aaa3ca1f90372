@@ -1,9 +1,0 @@
-
-Gpython:S1066%"/Merge this if statement with the enclosing one.(‘¯Ù
-Gpython:S1066("/Merge this if statement with the enclosing one.(‘¯Ù
-Gpython:S10663"/Merge this if statement with the enclosing one.(ÄäÿÃ
-Gpython:S10667"/Merge this if statement with the enclosing one.(¾½¤
-Gpython:S1066I"/Merge this if statement with the enclosing one.(ÄäÿÃ
-Gpython:S1066["/Merge this if statement with the enclosing one.(ÄäÿÃ
-_python:S2208"GImport only needed names or import the module and then use its members.(øÿˆÊ
-lpython:S3776"TRefactor this function to reduce its Cognitive Complexity from 30 to the 15 allowed.(˜¤—Ç

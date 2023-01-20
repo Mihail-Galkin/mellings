@@ -72,5 +72,7 @@ class MainWindow(Window):
 
 
 if __name__ == "__main__":
-    main = MainWindow("123", (960, 540))
+    with open("resolution.txt", "r", encoding="utf-8") as f:
+        res = tuple(map(int, f.readline().strip().split()))
+    main = MainWindow(" ", res)
 

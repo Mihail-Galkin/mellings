@@ -1,4 +1,3 @@
-# levels
 # Mellings
 Игра-головоломка, вдохновленная [леммингами](https://ru.wikipedia.org/wiki/Lemmings). 
 ## Игровой процесс
